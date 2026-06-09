@@ -74,7 +74,6 @@
             background: rgba(4, 7, 15, 0.8);
         }
 
-        input[type="file"] { display: none; }
         .btn-upload {
             background: linear-gradient(135deg, var(--accent-neon) 0%, #0ea5e9 100%);
             color: #020617;
@@ -88,6 +87,7 @@
             letter-spacing: 1px;
             box-shadow: 0 10px 25px rgba(0, 255, 170, 0.25);
             transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
         }
         .btn-upload:hover {
             transform: translateY(-2px);
@@ -112,7 +112,7 @@
 
         .subtitle {
             margin: 0;
-            height: 5px; /* Espaciador mínimo tras quitar el icono */
+            height: 5px;
         }
 
         .workspace {
@@ -212,6 +212,13 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.6);
             position: relative;
             color: #fff;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* TEXTO JUGADORES CANCHA */
@@ -278,9 +285,9 @@
             font-size: 34px;
         }
 
-        /* BANCA DE RESERVAS (Modificada: +10% de tamaño general) */
+        /* BANCA DE RESERVAS */
         .bench-section {
-            width: 440px; /* Ampliado para contener cómodamente los elementos más grandes */
+            width: 440px; 
             background: rgba(7, 11, 22, 0.5);
             border-radius: 24px;
             padding: 24px;
@@ -292,7 +299,7 @@
         }
 
         .bench-title {
-            font-size: 16.5px; /* +10% */
+            font-size: 16.5px; 
             font-weight: 800;
             letter-spacing: 1.5px;
             color: #a5b4fc;
@@ -313,7 +320,7 @@
 
         .bench-player {
             background: rgba(30, 41, 59, 0.4);
-            padding: 16px 20px; /* +10% de padding interno */
+            padding: 16px 20px; 
             border-radius: 14px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             border: 1px solid rgba(255,255,255,0.03);
@@ -330,29 +337,47 @@
 
         .bench-pos {
             background: rgba(0, 0, 0, 0.4);
-            width: 40px; /* +10% de tamaño en el círculo */
+            width: 40px; 
             height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16.5px; /* +10% */
+            font-size: 16.5px; 
             font-weight: 800;
             color: #cbd5e1;
             border: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
+        
+        .bench-pos img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .bench-avatar-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            vertical-align: middle;
+            margin-right: 6px;
+            border: 1.5px solid var(--accent-neon);
         }
         
         .bench-info-name {
             color: #fff; 
             font-weight: 600; 
-            display: block;
-            font-size: 21px; /* +10% (de 19px a 21px) tanto nombre como emoticón integrado */
+            display: flex;
+            align-items: center;
+            font-size: 21px; 
         }
         
         .bench-score { 
             color: var(--accent-neon); 
             font-weight: 800; 
-            font-size: 17.8px; /* +10% (de 16.2px a 17.8px) */
+            font-size: 17.8px; 
             margin-top: 4px;
         }
 
@@ -368,13 +393,14 @@
 <body>
 
     <div class="main-wrapper">
-        <!-- Panel de carga -->
+        <!-- Panel de control inteligente -->
         <div class="upload-section">
-            <label class="btn-upload">
-                <i class="fa-solid fa-file-excel"></i> Importar Datos Planilla
-                <input type="file" id="excel-input" accept=".xlsx, .xls">
-            </label>
-            <p id="file-name" style="margin: 10px 0 0 0; font-size: 12px; color: var(--accent-neon); font-weight: 600;"></p>
+            <button id="btn-sync" class="btn-upload">
+                <i class="fa-solid fa-rotate"></i> Conectar Planilla Local
+            </button>
+            <p id="file-name" style="margin: 10px 0 0 0; font-size: 12px; color: var(--accent-neon); font-weight: 600;">
+                Ningún archivo vinculado actualmente.
+            </p>
         </div>
 
         <!-- Encabezados -->
@@ -386,19 +412,17 @@
         <!-- Estado Vacío -->
         <div id="mensaje-inicio" class="empty-state">
             <i class="fa-solid fa-circle-nodes fa-spin" style="font-size: 40px; color: #818cf8; margin-bottom: 20px; display:block;"></i>
-            Esperando archivo Excel para inicializar el despliegue del estadio...
+            Vincule su archivo Excel local para inicializar el despliegue del estadio automático...
         </div>
 
         <!-- Espacio Dividido -->
         <div class="workspace">
-            <!-- CANCHA DE JUEGO -->
             <div class="football-pitch" id="cancha">
                 <div class="pitch-lines"></div>
                 <div class="pitch-area-top"></div>
                 <div class="pitch-area-bot"></div>
             </div>
 
-            <!-- BANCA VERTICAL DE SUPLENTES -->
             <div class="bench-section" id="banca-contenedor">
                 <div class="bench-title"><i class="fa-solid fa-users-viewfinder"></i> Reservas Activos (12+)</div>
                 <div class="bench-vertical-list" id="banca-cuerpo"></div>
@@ -406,38 +430,86 @@
         </div>
     </div>
 
+    <!-- Almacenamiento local de llaves de archivo mediante IndexedDB -->
+    <script src="https://unpkg.com/idb-keyval@6/dist/umd/idb-keyval-min.js"></script>
+
     <script>
-        const input = document.getElementById('excel-input');
+        const btnSync = document.getElementById('btn-sync');
         const cancha = document.getElementById('cancha');
         const bancaContenedor = document.getElementById('banca-contenedor');
         const bancaCuerpo = document.getElementById('banca-cuerpo');
         const mensajeInicio = document.getElementById('mensaje-inicio');
         const fileNameDisplay = document.getElementById('file-name');
 
-        input.addEventListener('change', function(e) {
-            const archivo = e.target.files[0];
-            if (!archivo) return;
+        let fileHandle = null;
 
-            fileNameDisplay.innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${archivo.name} sincronizado`;
-            const lector = new FileReader();
-
-            lector.onload = function(evt) {
-                const data = new Uint8Array(evt.target.result);
-                const libro = XLSX.read(data, { type: 'array' });
-                const nombreHoja = libro.SheetNames[0];
-                const hoja = libro.Sheets[nombreHoja];
-                const filas = XLSX.utils.sheet_to_json(hoja, { header: 1 });
-
-                procesarDatosMundial(filas);
-                input.value = ''; 
-            };
-            lector.readAsArrayBuffer(archivo);
+        // Al cargar la página, intentar recuperar la conexión previa
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                fileHandle = await idbKeyval.get('excel-handle');
+                if (fileHandle) {
+                    // Verificar si aún tenemos permiso
+                    const opciones = { mode: 'read' };
+                    if (await fileHandle.queryPermission(opciones) === 'granted') {
+                        leerYProcesarArchivo(fileHandle);
+                    } else {
+                        fileNameDisplay.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Conexión pausada. Haz clic en "Conectar Planilla Local" para reactivar.`;
+                    }
+                }
+            } catch (err) {
+                console.log("IndexedDB no está disponible en entorno de archivo plano doble clic.");
+            }
         });
+
+        // Evento del botón principal
+        btnSync.addEventListener('click', async () => {
+            try {
+                // Abre el explorador de archivos nativo y guarda el acceso directo
+                [fileHandle] = await window.showOpenFilePicker({
+                    types: [{
+                        description: 'Planillas de Excel',
+                        accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'], 'application/vnd.ms-excel': ['.xls'] }
+                    }],
+                    multiple: false
+                });
+
+                // Guardar la referencia permanentemente en el navegador
+                await idbKeyval.set('excel-handle', fileHandle);
+                leerYProcesarArchivo(fileHandle);
+
+            } catch (error) {
+                if(error.name !== 'AbortError') {
+                    alert("Para usar el auto-guardado, aloja tu archivo HTML en GitHub Pages o un servidor local. Si usas doble clic directo, se recomienda usar el método tradicional de arrastrar.");
+                }
+            }
+        });
+
+        async function leerYProcesarArchivo(handle) {
+            try {
+                fileNameDisplay.innerHTML = `<i class="fa-solid fa-shield-halved"></i> Sincronizado dinámicamente con: <strong>${handle.name}</strong>`;
+                
+                const file = await handle.getFile();
+                const lector = new FileReader();
+
+                lector.onload = function(evt) {
+                    const data = new Uint8Array(evt.target.result);
+                    const libro = XLSX.read(data, { type: 'array' });
+                    const nombreHoja = libro.SheetNames[0];
+                    const hoja = libro.Sheets[nombreHoja];
+                    const filas = XLSX.utils.sheet_to_json(hoja, { header: 1 });
+
+                    procesarDatosMundial(filas);
+                };
+                lector.readAsArrayBuffer(file);
+            } catch (err) {
+                fileNameDisplay.innerText = "Error leyendo el archivo local.";
+            }
+        }
 
         function procesarDatosMundial(filas) {
             const listaJugadores = [];
-
             let colLugar = 0, colNombre = 1, colPuntaje = 2;
+            
             if(filas[0]) {
                 filas[0].forEach((celda, idx) => {
                     const texto = String(celda).toLowerCase().trim();
@@ -450,7 +522,6 @@
             for (let i = 1; i < filas.length; i++) {
                 const fila = filas[i];
                 if (!fila || fila.length < 2) continue;
-
                 const pRaw = fila[colPuntaje];
                 const puntosNum = pRaw !== undefined ? parseFloat(pRaw) : 0;
 
@@ -462,7 +533,6 @@
             }
 
             listaJugadores.sort((a, b) => b.puntos - a.puntos);
-
             let rangoActual = 1;
             listaJugadores.forEach((jugador, index) => {
                 if (index > 0 && jugador.puntos < listaJugadores[index - 1].puntos) {
@@ -474,7 +544,10 @@
             renderizarEstadioFijo(listaJugadores);
         }
 
-        function obtenerEmoticonLugar(lugar) {
+        function obtenerContenidoAvatar(nombre, lugar) {
+            if (nombre.toLowerCase().trim().includes("marti")) {
+                return `<img src="image_0c9180.png" alt="${nombre}">`;
+            }
             if (lugar === 1) return "👑";
             if (lugar === 2) return "🥈";
             if (lugar === 3) return "🥉";
@@ -494,23 +567,9 @@
             const titulares = jugadores.slice(0, 11);
             const suplentes = jugadores.slice(11);
 
-            // ================= COORDINATES FORMACIÓN 1-4-3-2-1 =================
             const mapaTactico = [
-                { x: 50, y: 88 },  // 1. Arquero 
-
-                { x: 85, y: 72 },  // 2. Lateral Derecho
-                { x: 62, y: 72 },  // 3. Defensor Central Derecho
-                { x: 38, y: 72 },  // 4. Defensor Central Izquierdo
-                { x: 15, y: 72 },  // 5. Lateral Izquierdo
-
-                { x: 78, y: 54 },  // 6. Mediocampista Derecho
-                { x: 50, y: 55 },  // 7. Volante Central / Pivote
-                { x: 22, y: 54 },  // 8. Mediocampista Izquierdo
-
-                { x: 68, y: 34 },  // 9. Mediopunta Derecho
-                { x: 32, y: 34 },  // 10. Mediopunta Izquierdo
-
-                { x: 50, y: 16 }   // 11. Delantero Centro 
+                { x: 50, y: 88 }, { x: 85, y: 72 }, { x: 62, y: 72 }, { x: 38, y: 72 }, { x: 15, y: 72 },
+                { x: 78, y: 54 }, { x: 50, y: 55 }, { x: 22, y: 54 }, { x: 68, y: 34 }, { x: 32, y: 34 }, { x: 50, y: 16 }
             ];
 
             titulares.forEach((item, index) => {
@@ -528,10 +587,10 @@
                 divJugador.style.left = `${coordenadas.x}%`;
                 divJugador.style.top = `${coordenadas.y}%`;
 
-                const emoticon = obtenerEmoticonLugar(item.posCalculada);
+                const avatarContenido = obtenerContenidoAvatar(item.nombre, item.posCalculada);
 
                 divJugador.innerHTML = `
-                    <div class="avatar">${emoticon}</div>
+                    <div class="avatar">${avatarContenido}</div>
                     <div class="player-info">
                         <strong>${item.posCalculada}. ${item.nombre}</strong>
                         <span class="player-score">${item.puntos} PTS</span>
@@ -544,12 +603,18 @@
                 const divSuplente = document.createElement('div');
                 divSuplente.classList.add('bench-player');
                 
-                const emoticonSuplente = obtenerEmoticonLugar(item.posCalculada);
+                let visualNombre = "";
+                if (item.nombre.toLowerCase().trim().includes("marti")) {
+                    visualNombre = `<img src="image_0c9180.png" class="bench-avatar-mini" alt="Marti"> ${item.nombre}`;
+                } else {
+                    const emoticonSuplente = obtenerContenidoAvatar(item.nombre, item.posCalculada);
+                    visualNombre = `${emoticonSuplente} ${item.nombre}`;
+                }
 
                 divSuplente.innerHTML = `
                     <div class="bench-pos">${item.posCalculada}</div>
                     <div style="flex: 1;">
-                        <span class="bench-info-name">${emoticonSuplente} ${item.nombre}</span>
+                        <span class="bench-info-name">${visualNombre}</span>
                         <div class="bench-score">${item.puntos} pts</div>
                     </div>
                 `;
