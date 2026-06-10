@@ -250,7 +250,7 @@
             border-color: rgba(0, 255, 170, 0.7);
         }
 
-        /* BANCA DE RESERVAS MODIFICADA (Grid de 2 columnas en móviles) */
+        /* BANCA DE RESERVAS (Grid de 2 columnas en móviles +30%) */
         .bench-section {
             width: 100%; 
             background: rgba(7, 11, 22, 0.5);
@@ -271,14 +271,14 @@
 
         .bench-vertical-list { 
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Muestra los elementos de 2 en 2 */
+            grid-template-columns: repeat(2, 1fr); 
             gap: 12px; 
             width: 100%;
         }
 
         .bench-player {
             background: rgba(30, 41, 59, 0.4); 
-            padding: 12px 14px; /* Adaptado dinámicamente para que quepa bien en móviles */
+            padding: 12px 14px; 
             border-radius: 14px;
             box-shadow: 0 6px 16px rgba(0,0,0,0.2); 
             border: 1px solid rgba(255,255,255,0.03);
@@ -331,10 +331,10 @@
         .bench-info-name { 
             color: #fff; 
             font-weight: 600; 
-            font-size: 16px; /* Ajuste adaptativo base móvil */
+            font-size: 16px; 
             white-space: nowrap; 
             overflow: hidden;
-            text-overflow: ellipsis; /* Si el nombre es larguísimo, no rompe la caja */
+            text-overflow: ellipsis; 
         }
         
         .bench-score { 
@@ -346,7 +346,7 @@
 
         .empty-state { padding: 40px; color: var(--text-muted); font-style: italic; text-align: center; width: 100%; }
 
-        /* MULTIPLES PANTALLAS ESCRITORIO (Reglas exclusivas para monitores) */
+        /* MULTIPLES PANTALLAS ESCRITORIO */
         @media (min-width: 992px) {
             body { padding: 25px; }
             .main-wrapper { padding: 30px; }
@@ -368,11 +368,11 @@
             }
             .bench-vertical-list {
                 display: flex;
-                flex-direction: column; /* Vuelve a lista vertical clásica en PC */
+                flex-direction: column; 
                 gap: 15px;
             }
             .bench-player {
-                padding: 18px 26px; /* Recupera el enorme tamaño +30% en PC */
+                padding: 18px 26px; 
                 border-radius: 18px;
                 gap: 20px;
             }
@@ -501,84 +501,4 @@
                 if (index > 0 && jugador.puntos < listaJugadores[index - 1].puntos) {
                     rangoActual = index + 1;
                 }
-                jugador.posCalculada = rangoActual;
-            });
-
-            renderizarEstadioFijo(listaJugadores);
-        }
-
-        function obtenerContenidoAvatar(lugar) {
-            if (lugar === 1) return "👑";
-            if (lugar === 2) return "🥈";
-            if (lugar === 3) return "🥉";
-            if (lugar <= 11) return "⚽";
-            return "🏃‍♂️";
-        }
-
-        function renderizarEstadioFijo(jugadores) {
-            cancha.querySelectorAll('.player-node').forEach(el => el.remove());
-            bancaCuerpo.innerHTML = "";
-
-            mensajeInicio.style.display = "none";
-            cancha.style.display = "block";
-            bancaContenedor.style.display = "block";
-
-            const titulares = jugadores.slice(0, 11);
-            const suplentes = jugadores.slice(11);
-
-            const mapaTactico = [
-                { x: 50, y: 88 }, { x: 85, y: 72 }, { x: 62, y: 72 }, { x: 38, y: 72 }, { x: 15, y: 72 },
-                { x: 78, y: 54 }, { x: 50, y: 55 }, { x: 22, y: 54 }, { x: 68, y: 34 }, { x: 32, y: 34 }, { x: 50, y: 16 }
-            ];
-
-            titulares.forEach((item, index) => {
-                const coordenadas = mapaTactico[10 - index];
-                if (!coordenadas) return;
-
-                const divJugador = document.createElement('div');
-                divJugador.classList.add('player-node');
-                
-                if (item.posCalculada === 1) divJugador.classList.add('p-pos-1');
-                else if (item.posCalculada === 2) divJugador.classList.add('p-pos-2');
-                else if (item.posCalculada === 3) divJugador.classList.add('p-pos-3');
-                else divJugador.classList.add('p-normal');
-
-                divJugador.style.left = `${coordinates.x}%`;
-                divJugador.style.top = `${coordinates.y}%`;
-
-                const avatarContenido = item.foto !== "" 
-                    ? `<img src="${item.foto}" alt="${item.nombre}">` 
-                    : obtenerContenidoAvatar(item.posCalculada);
-
-                divJugador.innerHTML = `
-                    <div class="avatar">${avatarContenido}</div>
-                    <div class="player-info">
-                        <strong>${item.posCalculada}. ${item.nombre}</strong>
-                        <span class="player-score">${item.puntos} PTS</span>
-                    </div>
-                `;
-                cancha.appendChild(divJugador);
-            });
-
-            suplentes.forEach(item => {
-                const divSuplente = document.createElement('div');
-                divSuplente.classList.add('bench-player');
-                
-                const avatarContenidoSuplente = item.foto !== "" 
-                    ? `<img src="${item.foto}" alt="${item.nombre}">` 
-                    : obtenerContenidoAvatar(item.posCalculada);
-
-                divSuplente.innerHTML = `
-                    <div class="bench-pos">${item.posCalculada}</div>
-                    <div class="bench-avatar-frame">${avatarContenidoSuplente}</div>
-                    <div class="bench-info-container">
-                        <span class="bench-info-name">${item.nombre}</span>
-                        <div class="bench-score">${item.puntos} pts</div>
-                    </div>
-                `;
-                bancaCuerpo.appendChild(divSuplente);
-            });
-        }
-    </script>
-</body>
-</html>
+                jugador.posCalculada =
