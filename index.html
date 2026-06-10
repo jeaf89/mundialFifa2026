@@ -188,6 +188,14 @@
             max-font-size: 40px;
         }
 
+        /* SOPORTE PARA FOTOS REALES AJUSTADAS CIRCULARMENTE */
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Recorta la foto perfectamente en círculo sin deformar */
+            display: block;
+        }
+
         .player-info {
             background: #030712;
             padding: 4px 8px;
@@ -217,7 +225,7 @@
             background: linear-gradient(135deg, #fbbf24, #d97706);
             border-color: #fff3c4;
             box-shadow: 0 0 25px rgba(251, 191, 36, 0.6);
-            scale: 1.08; /* Reducido un 10% (Antes 1.2) */
+            scale: 1.08; 
         }
         .p-pos-1 .player-info { border-color: var(--gold); } 
         .p-pos-1 .player-score { color: #fef08a; }
@@ -274,10 +282,9 @@
         .bench-vertical-list::-webkit-scrollbar { height: 6px; }
         .bench-vertical-list::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 10px; }
 
-        /* Tarjeta de suplente (Agrandado un 20% en general para legibilidad) */
         .bench-player {
             background: rgba(30, 41, 59, 0.4); 
-            padding: 14px 20px; /* Aumentado */
+            padding: 14px 20px; 
             border-radius: 14px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
             border: 1px solid rgba(255,255,255,0.03);
@@ -285,38 +292,53 @@
             align-items: center; 
             gap: 15px; 
             flex-shrink: 0; 
-            min-width: 220px; /* Aumentado un 20% el ancho de tarjeta */
+            min-width: 220px; 
             transition: all 0.25s;
         }
         .bench-player:hover { background: rgba(30, 41, 59, 0.7); border-color: var(--accent-neon); }
 
-        /* Círculo numérico agrandado un 20% */
+        .bench-avatar-frame {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.2);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.4);
+            flex-shrink: 0;
+        }
+        .bench-avatar-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         .bench-pos {
             background: rgba(0, 0, 0, 0.4); 
-            width: 38px;  /* Aumentado de 32px a 38px */
-            height: 38px; /* Aumentado de 32px a 38px */
+            width: 38px;  
+            height: 38px; 
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 16px; /* Aumentado */
+            font-size: 16px; 
             font-weight: 800; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
         }
 
-        /* Nombre agrandado un 20% */
         .bench-info-name { 
             color: #fff; 
             font-weight: 600; 
             display: flex; 
             align-items: center; 
-            font-size: 18px; /* Aumentado de 15px a 18px */
+            font-size: 18px; 
             white-space: nowrap; 
         }
         
-        /* Puntaje agrandado un 20% */
         .bench-score { 
             color: var(--accent-neon); 
             font-weight: 800; 
-            font-size: 15.5px; /* Aumentado de 13px a 15.5px */
+            font-size: 15.5px; 
             margin-top: 3px; 
         }
 
@@ -338,7 +360,7 @@
                 aspect-ratio: auto;
             }
             .bench-section {
-                width: 440px; /* Ajustado ancho fijo para PC */
+                width: 440px; 
                 max-height: 950px;
                 overflow-y: auto;
                 overflow-x: hidden;
@@ -354,7 +376,7 @@
             }
             
             .avatar { font-size: calc(var(--size-player) * 0.35); }
-            .p-pos-1 .avatar { font-size: 50px; width: 148px; height: 148px; scale: 1; } /* Escalado controlado PC */
+            .p-pos-1 .avatar { font-size: 50px; width: 148px; height: 148px; scale: 1; } 
             .p-pos-2 .avatar { font-size: 48px; width: var(--size-2); height: var(--size-2); scale: 1; }
             .p-pos-3 .avatar { font-size: 42px; width: var(--size-3); height: var(--size-3); scale: 1; }
             .p-normal .avatar { width: var(--size-player); height: var(--size-player); }
@@ -389,7 +411,7 @@
             </div>
 
             <div class="bench-section" id="banca-contenedor">
-                <div class="bench-title"><i class="fa-solid fa-users-viewfinder"></i> A la banca :D</div>
+                <div class="bench-title"><i class="fa-solid fa-users-viewfinder"></i> Reservas Activos (12+)</div>
                 <div class="bench-vertical-list" id="banca-cuerpo"></div>
             </div>
         </div>
@@ -431,14 +453,16 @@
             if (filas.length < 2) return;
 
             const listaJugadores = [];
-            let colLugar = 0, colNombre = 1, colPuntaje = 2;
+            let colLugar = 0, colNombre = 1, colPuntaje = 2, colFoto = -1;
 
+            // Escaneo dinámico de columnas por nombre
             if(filas[0]) {
                 filas[0].forEach((celda, idx) => {
                     const txt = String(celda).toLowerCase().trim();
                     if(txt.includes("lug") || txt.includes("pos")) colLugar = idx;
                     if(txt.includes("nom") || txt.includes("int")) colNombre = idx;
                     if(txt.includes("pun") || txt.includes("mar")) colPuntaje = idx;
+                    if(txt.includes("fot") || txt.includes("url") || txt.includes("img")) colFoto = idx;
                 });
             }
 
@@ -448,11 +472,18 @@
 
                 const pRaw = fila[colPuntaje];
                 const puntosNum = pRaw !== undefined ? parseFloat(pRaw) : 0;
+                
+                // Lee el enlace de la foto si la columna existe
+                let urlFoto = "";
+                if(colFoto !== -1 && fila[colFoto]) {
+                    urlFoto = fila[colFoto].replace(/^"|"$/g, '').trim();
+                }
 
                 listaJugadores.push({
                     posOriginal: parseInt(fila[colLugar]) || (listaJugadores.length + 1),
                     nombre: fila[colNombre].replace(/^"|"$/g, '').trim(),
-                    puntos: puntosNum
+                    puntos: puntosNum,
+                    foto: urlFoto
                 });
             }
 
@@ -488,7 +519,6 @@
             const titulares = jugadores.slice(0, 11);
             const suplentes = jugadores.slice(11);
 
-            // Formación táctica fija equilibrada (1-4-3-2-1)
             const mapaTactico = [
                 { x: 50, y: 88 }, { x: 85, y: 72 }, { x: 62, y: 72 }, { x: 38, y: 72 }, { x: 15, y: 72 },
                 { x: 78, y: 54 }, { x: 50, y: 55 }, { x: 22, y: 54 }, { x: 68, y: 34 }, { x: 32, y: 34 }, { x: 50, y: 16 }
@@ -509,7 +539,10 @@
                 divJugador.style.left = `${coordenadas.x}%`;
                 divJugador.style.top = `${coordenadas.y}%`;
 
-                const avatarContenido = obtenerContenidoAvatar(item.posCalculada);
+                // Renderiza la etiqueta <img> si hay foto, o el emoji si no hay
+                const avatarContenido = item.foto !== "" 
+                    ? `<img src="${item.foto}" alt="${item.nombre}">` 
+                    : obtenerContenidoAvatar(item.posCalculada);
 
                 divJugador.innerHTML = `
                     <div class="avatar">${avatarContenido}</div>
@@ -525,12 +558,15 @@
                 const divSuplente = document.createElement('div');
                 divSuplente.classList.add('bench-player');
                 
-                const emoticonSuplente = obtenerContenidoAvatar(item.posCalculada);
+                const avatarContenidoSuplente = item.foto !== "" 
+                    ? `<img src="${item.foto}" alt="${item.nombre}">` 
+                    : obtenerContenidoAvatar(item.posCalculada);
 
                 divSuplente.innerHTML = `
                     <div class="bench-pos">${item.posCalculada}</div>
+                    <div class="bench-avatar-frame">${avatarContenidoSuplente}</div>
                     <div style="flex: 1;">
-                        <span class="bench-info-name">${emoticonSuplente} ${item.nombre}</span>
+                        <span class="bench-info-name">${item.nombre}</span>
                         <div class="bench-score">${item.puntos} pts</div>
                     </div>
                 `;
