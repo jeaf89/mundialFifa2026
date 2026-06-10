@@ -501,4 +501,84 @@
                 if (index > 0 && jugador.puntos < listaJugadores[index - 1].puntos) {
                     rangoActual = index + 1;
                 }
-                jugador.posCalculada =
+                jugador.posCalculada = rangoActual;
+            });
+
+            renderizarEstadioFijo(listaJugadores);
+        }
+
+        function obtenerContenidoAvatar(lugar) {
+            if (lugar === 1) return "👑";
+            if (lugar === 2) return "🥈";
+            if (lugar === 3) return "🥉";
+            if (lugar <= 11) return "⚽";
+            return "🏃‍♂️";
+        }
+
+        function renderizarEstadioFijo(jugadores) {
+            cancha.querySelectorAll('.player-node').forEach(el => el.remove());
+            bancaCuerpo.innerHTML = "";
+
+            mensajeInicio.style.display = "none";
+            cancha.style.display = "block";
+            bancaContenedor.style.display = "block";
+
+            const titulares = jugadores.slice(0, 11);
+            const suplentes = jugadores.slice(11);
+
+            const mapaTactico = [
+                { x: 50, y: 88 }, { x: 85, y: 72 }, { x: 62, y: 72 }, { x: 38, y: 72 }, { x: 15, y: 72 },
+                { x: 78, y: 54 }, { x: 50, y: 55 }, { x: 22, y: 54 }, { x: 68, y: 34 }, { x: 32, y: 34 }, { x: 50, y: 16 }
+            ];
+
+            titulares.forEach((item, index) => {
+                const coordenadas = mapaTactico[10 - index];
+                if (!coordenadas) return;
+
+                const divJugador = document.createElement('div');
+                divJugador.classList.add('player-node');
+                
+                if (item.posCalculada === 1) divJugador.classList.add('p-pos-1');
+                else if (item.posCalculada === 2) divJugador.classList.add('p-pos-2');
+                else if (item.posCalculada === 3) divJugador.classList.add('p-pos-3');
+                else divJugador.classList.add('p-normal');
+
+                divJugador.style.left = `${coordenadas.x}%`;
+                divJugador.style.top = `${coordenadas.y}%`;
+
+                const avatarContenido = item.foto !== "" 
+                    ? `<img src="${item.foto}" alt="${item.nombre}">` 
+                    : obtenerContenidoAvatar(item.posCalculada);
+
+                divJugador.innerHTML = `
+                    <div class="avatar">${avatarContenido}</div>
+                    <div class="player-info">
+                        <strong>${item.posCalculada}. ${item.nombre}</strong>
+                        <span class="player-score">${item.puntos} PTS</span>
+                    </div>
+                `;
+                cancha.appendChild(divJugador);
+            });
+
+            suplentes.forEach(item => {
+                const divSuplente = document.createElement('div');
+                divSuplente.classList.add('bench-player');
+                
+                const avatarContenidoSuplente = item.foto !== "" 
+                    ? `<img src="${item.foto}" alt="${item.nombre}">` 
+                    : obtenerContenidoAvatar(item.posCalculada);
+
+                divSuplente.innerHTML = `
+                    <div class="bench-pos">${item.posCalculada}</div>
+                    <div class="bench-avatar-frame">${avatarContenidoSuplente}</div>
+                    <div class="bench-info-container">
+                        <span class="bench-info-name">${item.nombre}</span>
+                        <div class="bench-score">${item.puntos} pts</div>
+                    </div>
+                `;
+                bancaCuerpo.appendChild(divSuplente);
+            });
+        }
+    </script>
+</body>
+</html>
