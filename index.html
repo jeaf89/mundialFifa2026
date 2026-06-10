@@ -250,7 +250,7 @@
             border-color: rgba(0, 255, 170, 0.7);
         }
 
-        /* BANCA DE RESERVAS (Grid de 2 columnas en móviles +30%) */
+        /* BANCA DE RESERVAS (Grid de 2 columnas en móviles) */
         .bench-section {
             width: 100%; 
             background: rgba(7, 11, 22, 0.5);
@@ -427,7 +427,8 @@
     </div>
 
     <script>
-        const URL_GOOGLE_SHEETS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRaSkZcOTooQwbmjreBN7WVtD5_s_PEJ1N8DOp5s0unXosIbvTRXGimFjKjHAHybcJZllDjiq-_zi0Q/pub?output=csv";
+        // URL Base de tu documento publicado
+        const BASE_URL_SHEETS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRaSkZcOTooQwbmjreBN7WVtD5_s_PEJ1N8DOp5s0unXosIbvTRXGimFjKjHAHybcJZllDjiq-_zi0Q/pub?output=csv";
 
         const cancha = document.getElementById('cancha');
         const bancaContenedor = document.getElementById('banca-contenedor');
@@ -438,7 +439,10 @@
         window.addEventListener('DOMContentLoaded', cargarDatosDesdeNube);
 
         function cargarDatosDesdeNube() {
-            fetch(URL_GOOGLE_SHEETS)
+            // SOLUCIÓN PARA MÓVILES: Se añade un timestamp dinámico para obligar al navegador móvil a limpiar la caché y no bloquear el CORS.
+            const urlConRompeCache = `${BASE_URL_SHEETS}&cachebuster=${new Date().getTime()}`;
+
+            fetch(urlConRompeCache)
                 .then(response => {
                     if (!response.ok) throw new Error("No se pudo obtener la información.");
                     return response.text();
