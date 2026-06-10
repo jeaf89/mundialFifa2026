@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Copa Mundial FIFA 2026 - Estadio Virtual</title>
+    <!-- Iconos de FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -21,12 +22,6 @@
             
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            
-            /* Tamaños de Podio Jerárquicos (Escala Base Escritorio) */
-            --size-1: 165px;   
-            --size-2: 142px;   
-            --size-3: 123px;   
-            --size-player: 104px; 
 
             --gold: #f59e0b;
             --silver: #e2e8f0;
@@ -48,7 +43,7 @@
 
         .main-wrapper {
             width: 100%;
-            max-width: 1550px;
+            max-width: 1300px; /* Ampliado para dar espacio a la estructura lado a lado */
             background: var(--panel-bg);
             backdrop-filter: blur(20px);
             padding: 20px;
@@ -76,7 +71,7 @@
 
         .header-titles {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         h2 {
@@ -90,32 +85,30 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* ESPACIO DE TRABAJO RESPONSIVE */
+        /* ESPACIO DE TRABAJO (Por defecto en móvil: vertical) */
         .workspace {
             display: flex;
             flex-direction: column; 
             gap: 25px;
-            align-items: center;
-            justify-content: center;
             width: 100%;
         }
 
-        /* CANCHA DE FÚTBOL AUTO-ADAPTATIVA */
+        /* CANCHA DE FÚTBOL CON UN 20% MÁS DE LARGO (aspect-ratio ajustado de 1/1 a 1/1.2) */
         .football-pitch {
             width: 100%;
-            max-width: 950px;
-            aspect-ratio: 1 / 1; 
+            aspect-ratio: 1 / 1.2; 
             height: auto; 
             background: 
                 linear-gradient(rgba(2, 6, 23, 0.2) 0%, rgba(2, 6, 23, 0.6) 100%),
                 linear-gradient(180deg, var(--grass-green) 50%, var(--grass-light) 50%);
-            background-size: 100% 100%, 100% 8.5%;
+            background-size: 100% 100%, 100% 7%;
             border-radius: 18px;
             border: 3px solid rgba(255, 255, 255, 0.8);
             position: relative;
             box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 15px 35px rgba(0,0,0,0.7);
             overflow: hidden;
             display: none;
+            box-sizing: border-box;
         }
 
         .pitch-lines {
@@ -152,7 +145,7 @@
             left: 50%;
             transform: translateX(-50%);
             width: 38%;
-            height: 11.5%;
+            height: 10%;
             border-left: 2px solid rgba(255,255,255,0.35);
             border-right: 2px solid rgba(255,255,255,0.35);
         }
@@ -185,7 +178,6 @@
             color: #fff;
             overflow: hidden;
             font-size: 4.5vw; 
-            max-font-size: 40px;
         }
 
         .avatar img {
@@ -208,7 +200,6 @@
             text-align: center;
             color: #ffffff;
             width: fit-content;
-            max-font-size: 16px;
         }
         
         .player-score {
@@ -219,7 +210,7 @@
             margin-top: 1px;
         }
 
-        /* Estilos de podio dinámicos */
+        /* Estilos de podio */
         .p-pos-1 .avatar {
             background: linear-gradient(135deg, #fbbf24, #d97706);
             border-color: #fff3c4;
@@ -250,25 +241,28 @@
             border-color: rgba(0, 255, 170, 0.7);
         }
 
-        /* BANCA DE RESERVAS (Base Móvil en Grid de 2 Columnas) */
+        /* BANCA DE RESERVAS */
         .bench-section {
             width: 100%; 
             background: rgba(7, 11, 22, 0.5);
             border-radius: 20px;
-            padding: 16px;
+            padding: 20px;
             border: 1px solid rgba(255,255,255,0.06);
             box-sizing: border-box;
             display: none;
+            max-height: none !important;
+            overflow: visible !important; 
         }
 
         .bench-title {
-            font-size: 18px; 
+            font-size: 20px; 
             font-weight: 800; letter-spacing: 1px;
-            color: #a5b4fc; text-transform: uppercase; margin-bottom: 18px;
+            color: #a5b4fc; text-transform: uppercase; margin-bottom: 20px;
             display: flex; align-items: center; gap: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;
         }
 
+        /* Lista móvil por defecto */
         .bench-vertical-list { 
             display: grid;
             grid-template-columns: repeat(2, 1fr); 
@@ -292,8 +286,8 @@
         .bench-player:hover { background: rgba(30, 41, 59, 0.7); border-color: var(--accent-neon); }
 
         .bench-avatar-frame {
-            width: 44px;  
-            height: 44px; 
+            width: 42px;  
+            height: 42px; 
             border-radius: 50%;
             border: 1.5px solid rgba(255,255,255,0.2);
             overflow: hidden;
@@ -302,7 +296,7 @@
             justify-content: center;
             background: rgba(0,0,0,0.4);
             flex-shrink: 0;
-            font-size: 18px; 
+            font-size: 16px; 
         }
         .bench-avatar-frame img {
             width: 100%;
@@ -312,11 +306,11 @@
 
         .bench-pos {
             background: rgba(0, 0, 0, 0.4); 
-            width: 44px;  
-            height: 44px; 
+            width: 42px;  
+            height: 42px; 
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 18px; 
+            font-size: 16px; 
             font-weight: 800; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
         }
@@ -341,82 +335,57 @@
             color: var(--accent-neon); 
             font-weight: 800; 
             font-size: 15px; 
-            margin-top: 2px; 
+            margin-top: 1px; 
         }
 
         .empty-state { padding: 40px; color: var(--text-muted); font-style: italic; text-align: center; width: 100%; }
 
         /* ==========================================================================
-           SECCIÓN OPTIMIZADA PARA COMPUTADORAS / NOTEBOOKS (SIN SCROLL EN LA BANCA)
+           MODO NOTEBOOK / ESCRITORIO (Alineación lado a lado y banca vertical derecha)
            ========================================================================== */
         @media (min-width: 992px) {
-            body { padding: 25px; }
-            .main-wrapper { padding: 30px; max-width: 1650px; } /* Expandido levemente para dar aire */
+            body { padding: 30px; }
+            .main-wrapper { padding: 35px; }
             h2 { font-size: 38px; }
             
+            /* Cambiamos el flujo de la app: Cancha (Izquierda) y Banca (Derecha) */
             .workspace {
                 flex-direction: row;
                 align-items: flex-start;
                 justify-content: space-between;
+                gap: 30px;
             }
             
+            /* La cancha toma el 60% del ancho disponible */
             .football-pitch {
-                flex: 1;
-                max-width: 850px; /* Reducido levemente para balancear espacio con la gran banca */
-                height: auto;
-                aspect-ratio: 1 / 1;
+                display: block;
+                flex: 0 0 60%;
+                max-width: 720px;
             }
 
-            /* Contenedor de la banca expandido para ocupar el resto de la pantalla */
+            /* La banca toma el 38% restante a la derecha */
             .bench-section {
-                flex: 1;
-                max-width: 680px; 
-                max-height: none; /* Quitamos el límite de altura estricto */
-                overflow: visible; /* Eliminamos barras de scroll */
+                display: block;
+                flex: 0 0 38%;
+                align-self: stretch; /* Se estira hacia abajo siguiendo el flujo de la cancha */
             }
 
-            /* La lista se convierte en una cuadrícula de 2 columnas en PC también, 
-               pero con tarjetas más compactas para que quepan todas hacia abajo de un vistazo */
+            /* Ajustamos la banca a 1 sola columna vertical continua */
             .bench-vertical-list {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr); 
-                gap: 10px;
-            }
-
-            /* Tarjetas de suplentes optimizadas y compactas para Notebook */
-            .bench-player {
-                padding: 10px 14px; 
-                border-radius: 12px;
+                grid-template-columns: 1fr;
                 gap: 12px;
-                width: 100%;
             }
 
-            .bench-avatar-frame, .bench-pos {
-                width: 42px;
-                height: 42px;
-                font-size: 18px;
-            }
-
-            .bench-info-name { 
-                font-size: 17px; 
-                font-weight: 700;
-            }
-
-            .bench-score { 
-                font-size: 15px; 
-                margin-top: 1px; 
-            }
-            
-            /* Ajustes finos de los nodos dentro de la cancha */
-            .avatar { font-size: calc(var(--size-player) * 0.35); }
-            .p-pos-1 .avatar { font-size: 46px; width: 135px; height: 135px; scale: 1; } 
-            .p-pos-2 .avatar { font-size: 42px; width: 120px; height: 120px; scale: 1; }
-            .p-pos-3 .avatar { font-size: 38px; width: 110px; height: 110px; scale: 1; }
-            .p-normal .avatar { width: 95px; height: 95px; }
+            /* Ajustes estables de tamaño para los jugadores en cancha */
+            .avatar { font-size: 26px; }
+            .p-pos-1 .avatar { font-size: 38px; width: 105px; height: 105px; } 
+            .p-pos-2 .avatar { font-size: 34px; width: 95px; height: 95px; }
+            .p-pos-3 .avatar { font-size: 30px; width: 88px; height: 88px; }
+            .p-normal .avatar { width: 76px; height: 76px; }
             
             .player-node { width: auto; }
-            .player-info { font-size: 15px; min-width: 120px; }
-            .p-pos-1 .player-info { font-size: 17px; }
+            .player-info { font-size: 13px; min-width: 105px; padding: 3px 6px; }
+            .p-pos-1 .player-info { font-size: 15px; }
         }
     </style>
 </head>
@@ -437,12 +406,14 @@
         </div>
 
         <div class="workspace">
+            <!-- CANCHA (Lado izquierdo en PC) -->
             <div class="football-pitch" id="cancha">
                 <div class="pitch-lines"></div>
                 <div class="pitch-area-top"></div>
                 <div class="pitch-area-bot"></div>
             </div>
 
+            <!-- BANCA VERTICAL (Lado derecho en PC) -->
             <div class="bench-section" id="banca-contenedor">
                 <div class="bench-title"><i class="fa-solid fa-couch"></i> A la banca 😆</div>
                 <div class="bench-vertical-list" id="banca-cuerpo"></div>
@@ -552,9 +523,10 @@
             const titulares = jugadores.slice(0, 11);
             const suplentes = jugadores.slice(11);
 
+            // Ajuste leve en coordenadas Y del mapa táctico debido al 20% extra de longitud
             const mapaTactico = [
-                { x: 50, y: 88 }, { x: 85, y: 72 }, { x: 62, y: 72 }, { x: 38, y: 72 }, { x: 15, y: 72 },
-                { x: 78, y: 54 }, { x: 50, y: 55 }, { x: 22, y: 54 }, { x: 68, y: 34 }, { x: 32, y: 34 }, { x: 50, y: 16 }
+                { x: 50, y: 90 }, { x: 84, y: 76 }, { x: 61, y: 76 }, { x: 39, y: 76 }, { x: 16, y: 76 },
+                { x: 76, y: 56 }, { x: 50, y: 56 }, { x: 24, y: 56 }, { x: 70, y: 32 }, { x: 30, y: 32 }, { x: 50, y: 14 }
             ];
 
             titulares.forEach((item, index) => {
