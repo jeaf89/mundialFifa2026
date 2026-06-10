@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Copa Mundial FIFA 2026 - Estadio Virtual</title>
-    <!-- Iconos de FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -189,7 +188,6 @@
             max-font-size: 40px;
         }
 
-        /* SOPORTE PARA FOTOS REALES AJUSTADAS CIRCULARMENTE */
         .avatar img {
             width: 100%;
             height: 100%;
@@ -252,7 +250,7 @@
             border-color: rgba(0, 255, 170, 0.7);
         }
 
-        /* BANCA DE RESERVAS (ZONA ACTUALIZADA +30%) */
+        /* BANCA DE RESERVAS MODIFICADA (Grid de 2 columnas en móviles) */
         .bench-section {
             width: 100%; 
             background: rgba(7, 11, 22, 0.5);
@@ -261,11 +259,10 @@
             border: 1px solid rgba(255,255,255,0.06);
             box-sizing: border-box;
             display: none;
-            overflow: hidden;
         }
 
         .bench-title {
-            font-size: 18px; /* Incrementado de 15px */
+            font-size: 18px; 
             font-weight: 800; letter-spacing: 1px;
             color: #a5b4fc; text-transform: uppercase; margin-bottom: 18px;
             display: flex; align-items: center; gap: 12px;
@@ -273,34 +270,30 @@
         }
 
         .bench-vertical-list { 
-            display: flex; 
-            flex-direction: row; 
-            gap: 15px; /* Incrementado de 12px */
-            padding-bottom: 12px;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Muestra los elementos de 2 en 2 */
+            gap: 12px; 
+            width: 100%;
         }
-        .bench-vertical-list::-webkit-scrollbar { height: 8px; }
-        .bench-vertical-list::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.3); border-radius: 10px; }
 
         .bench-player {
             background: rgba(30, 41, 59, 0.4); 
-            padding: 18px 26px; /* Incrementado de 14px 20px (+30%) */
-            border-radius: 18px;
+            padding: 12px 14px; /* Adaptado dinámicamente para que quepa bien en móviles */
+            border-radius: 14px;
             box-shadow: 0 6px 16px rgba(0,0,0,0.2); 
             border: 1px solid rgba(255,255,255,0.03);
             display: flex; 
             align-items: center; 
-            gap: 20px; /* Incrementado de 15px */
-            flex-shrink: 0; 
-            min-width: 286px; /* Incrementado de 220px (+30%) */
+            gap: 12px; 
             transition: all 0.25s;
+            box-sizing: border-box;
+            width: 100%;
         }
         .bench-player:hover { background: rgba(30, 41, 59, 0.7); border-color: var(--accent-neon); }
 
         .bench-avatar-frame {
-            width: 50px;  /* Incrementado de 38px (+30%) */
-            height: 50px; /* Incrementado de 38px (+30%) */
+            width: 44px;  
+            height: 44px; 
             border-radius: 50%;
             border: 1.5px solid rgba(255,255,255,0.2);
             overflow: hidden;
@@ -309,7 +302,7 @@
             justify-content: center;
             background: rgba(0,0,0,0.4);
             flex-shrink: 0;
-            font-size: 21px; /* Incrementado para el tamaño del emoji */
+            font-size: 18px; 
         }
         .bench-avatar-frame img {
             width: 100%;
@@ -319,34 +312,41 @@
 
         .bench-pos {
             background: rgba(0, 0, 0, 0.4); 
-            width: 50px;  /* Incrementado de 38px (+30%) */
-            height: 50px; /* Incrementado de 38px (+30%) */
+            width: 44px;  
+            height: 44px; 
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 21px; /* Incrementado de 16px (+30%) */
+            font-size: 18px; 
             font-weight: 800; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
+        }
+
+        .bench-info-container {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex: 1;
         }
 
         .bench-info-name { 
             color: #fff; 
             font-weight: 600; 
-            display: flex; 
-            align-items: center; 
-            font-size: 23px; /* Incrementado de 18px (+30%) */
+            font-size: 16px; /* Ajuste adaptativo base móvil */
             white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis; /* Si el nombre es larguísimo, no rompe la caja */
         }
         
         .bench-score { 
             color: var(--accent-neon); 
             font-weight: 800; 
-            font-size: 20px; /* Incrementado de 15.5px (+30%) */
-            margin-top: 4px; 
+            font-size: 15px; 
+            margin-top: 2px; 
         }
 
         .empty-state { padding: 40px; color: var(--text-muted); font-style: italic; text-align: center; width: 100%; }
 
-        /* MULTIPLES PANTALLAS ESCRITORIO */
+        /* MULTIPLES PANTALLAS ESCRITORIO (Reglas exclusivas para monitores) */
         @media (min-width: 992px) {
             body { padding: 25px; }
             .main-wrapper { padding: 30px; }
@@ -362,20 +362,27 @@
                 aspect-ratio: auto;
             }
             .bench-section {
-                width: 520px; /* Incrementado de 440px para acomodar el ancho expandido */
+                width: 520px; 
                 max-height: 950px;
                 overflow-y: auto;
-                overflow-x: hidden;
             }
             .bench-vertical-list {
-                flex-direction: column;
-                overflow-x: hidden;
-                overflow-y: auto;
+                display: flex;
+                flex-direction: column; /* Vuelve a lista vertical clásica en PC */
+                gap: 15px;
             }
             .bench-player {
-                min-width: none;
-                width: 100%;
+                padding: 18px 26px; /* Recupera el enorme tamaño +30% en PC */
+                border-radius: 18px;
+                gap: 20px;
             }
+            .bench-avatar-frame, .bench-pos {
+                width: 50px;
+                height: 50px;
+                font-size: 21px;
+            }
+            .bench-info-name { font-size: 23px; }
+            .bench-score { font-size: 20px; margin-top: 4px; }
             
             .avatar { font-size: calc(var(--size-player) * 0.35); }
             .p-pos-1 .avatar { font-size: 50px; width: 148px; height: 148px; scale: 1; } 
@@ -406,16 +413,14 @@
         </div>
 
         <div class="workspace">
-            <!-- CANCHA -->
             <div class="football-pitch" id="cancha">
                 <div class="pitch-lines"></div>
                 <div class="pitch-area-top"></div>
                 <div class="pitch-area-bot"></div>
             </div>
 
-            <!-- BANCA -->
             <div class="bench-section" id="banca-contenedor">
-                <div class="bench-title"><i class="fa-solid fa-users-viewfinder"></i> Reservas Activos (12+)</div>
+                <div class="bench-title"><i class="fa-solid fa-couch"></i> A la banca 😆</div>
                 <div class="bench-vertical-list" id="banca-cuerpo"></div>
             </div>
         </div>
@@ -538,8 +543,8 @@
                 else if (item.posCalculada === 3) divJugador.classList.add('p-pos-3');
                 else divJugador.classList.add('p-normal');
 
-                divJugador.style.left = `${coordenadas.x}%`;
-                divJugador.style.top = `${coordenadas.y}%`;
+                divJugador.style.left = `${coordinates.x}%`;
+                divJugador.style.top = `${coordinates.y}%`;
 
                 const avatarContenido = item.foto !== "" 
                     ? `<img src="${item.foto}" alt="${item.nombre}">` 
@@ -566,7 +571,7 @@
                 divSuplente.innerHTML = `
                     <div class="bench-pos">${item.posCalculada}</div>
                     <div class="bench-avatar-frame">${avatarContenidoSuplente}</div>
-                    <div style="flex: 1;">
+                    <div class="bench-info-container">
                         <span class="bench-info-name">${item.nombre}</span>
                         <div class="bench-score">${item.puntos} pts</div>
                     </div>
