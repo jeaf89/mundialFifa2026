@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Copa Mundial FIFA 2026 - Estadio Virtual</title>
-    <!-- Librería para leer Excel -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- Iconos de FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -58,41 +55,22 @@
             border-radius: 32px;
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), inset 0 1px 1px rgba(255,255,255,0.1);
             border: 1px solid var(--panel-border);
+            display: flex;
+            flex-direction: column;
         }
 
-        .upload-section {
+        .status-bar {
             background: rgba(4, 7, 15, 0.6);
-            padding: 20px;
-            border-radius: 20px;
-            border: 2px dashed rgba(99, 102, 241, 0.3);
+            padding: 12px 25px;
+            border-radius: 50px;
             margin-bottom: 30px;
             text-align: center;
-            transition: all 0.3s;
-        }
-        .upload-section:hover {
-            border-color: var(--accent-neon);
-            background: rgba(4, 7, 15, 0.8);
-        }
-
-        input[type="file"] { display: none; }
-        
-        .btn-upload {
-            background: linear-gradient(135deg, var(--accent-neon) 0%, #0ea5e9 100%);
-            color: #020617;
-            padding: 12px 28px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 800;
             font-size: 13px;
-            text-transform: uppercase;
+            font-weight: 600;
+            color: var(--accent-neon);
+            border: 1px solid rgba(99, 102, 241, 0.2);
             display: inline-block;
-            letter-spacing: 1px;
-            box-shadow: 0 10px 25px rgba(0, 255, 170, 0.25);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .btn-upload:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(0, 255, 170, 0.4);
+            align-self: center;
         }
 
         .header-titles {
@@ -109,11 +87,6 @@
             background: linear-gradient(to right, #ffffff, #a5b4fc, var(--accent-neon));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-
-        .subtitle {
-            margin: 0;
-            height: 5px;
         }
 
         .workspace {
@@ -170,28 +143,17 @@
             transform: translate(-50%, -50%);
         }
 
-        .pitch-area-top {
+        .pitch-area-top, .pitch-area-bot {
             position: absolute;
-            top: 0;
             left: 50%;
             transform: translateX(-50%);
             width: 360px;
             height: 110px;
-            border-bottom: 3px solid rgba(255,255,255,0.35);
             border-left: 3px solid rgba(255,255,255,0.35);
             border-right: 3px solid rgba(255,255,255,0.35);
         }
-        .pitch-area-bot {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 360px;
-            height: 110px;
-            border-top: 3px solid rgba(255,255,255,0.35);
-            border-left: 3px solid rgba(255,255,255,0.35);
-            border-right: 3px solid rgba(255,255,255,0.35);
-        }
+        .pitch-area-top { top: 0; border-bottom: 3px solid rgba(255,255,255,0.35); }
+        .pitch-area-bot { bottom: 0; border-top: 3px solid rgba(255,255,255,0.35); }
 
         .player-node {
             position: absolute;
@@ -214,12 +176,6 @@
             position: relative;
             color: #fff;
             overflow: hidden;
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
 
         /* TEXTO JUGADORES CANCHA */
@@ -248,42 +204,34 @@
 
         /* Modificadores estéticos por puesto */
         .p-pos-1 .avatar {
-            width: var(--size-1);
-            height: var(--size-1);
+            width: var(--size-1); height: var(--size-1);
             background: linear-gradient(135deg, #fbbf24, #d97706);
-            border: 5px solid #fff3c4;
-            font-size: 56px;
+            border: 5px solid #fff3c4; font-size: 56px;
             box-shadow: 0 0 45px rgba(251, 191, 36, 0.6);
         }
         .p-pos-1 .player-info { border-color: var(--gold); font-size: 19px; } 
         .p-pos-1 .player-score { color: #fef08a; }
 
         .p-pos-2 .avatar {
-            width: var(--size-2);
-            height: var(--size-2);
+            width: var(--size-2); height: var(--size-2);
             background: linear-gradient(135deg, #f1f5f9, #64748b);
-            border: 4px solid #ffffff;
-            font-size: 48px;
+            border: 4px solid #ffffff; font-size: 48px;
             box-shadow: 0 0 30px rgba(255,255,255,0.35);
         }
         .p-pos-2 .player-info { border-color: var(--silver); }
 
         .p-pos-3 .avatar {
-            width: var(--size-3);
-            height: var(--size-3);
+            width: var(--size-3); height: var(--size-3);
             background: linear-gradient(135deg, #ea580c, #9a3412);
-            border: 4px solid #ffedd5;
-            font-size: 42px;
+            border: 4px solid #ffedd5; font-size: 42px;
             box-shadow: 0 0 25px rgba(234, 88, 12, 0.45);
         }
         .p-pos-3 .player-info { border-color: var(--bronze); }
 
         .p-normal .avatar {
-            width: var(--size-player);
-            height: var(--size-player);
+            width: var(--size-player); height: var(--size-player);
             background: linear-gradient(135deg, #1d4ed8, #0b1329);
-            border: 3px solid rgba(0, 255, 170, 0.7);
-            font-size: 34px;
+            border: 3px solid rgba(0, 255, 170, 0.7); font-size: 34px;
         }
 
         /* BANCA DE RESERVAS */
@@ -300,131 +248,56 @@
         }
 
         .bench-title {
-            font-size: 16.5px; 
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            color: #a5b4fc;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            padding-bottom: 12px;
+            font-size: 16.5px; font-weight: 800; letter-spacing: 1.5px;
+            color: #a5b4fc; text-transform: uppercase; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;
         }
 
-        .bench-vertical-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .bench-vertical-list { display: flex; flex-direction: column; gap: 12px; }
 
         .bench-player {
-            background: rgba(30, 41, 59, 0.4);
-            padding: 16px 20px; 
-            border-radius: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.03);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            transition: all 0.25s;
+            background: rgba(30, 41, 59, 0.4); padding: 16px 20px; border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.03);
+            display: flex; align-items: center; gap: 20px; transition: all 0.25s;
         }
-        .bench-player:hover {
-            transform: translateX(5px);
-            background: rgba(30, 41, 59, 0.7);
-            border-color: var(--accent-neon);
-        }
+        .bench-player:hover { transform: translateX(5px); background: rgba(30, 41, 59, 0.7); border-color: var(--accent-neon); }
 
         .bench-pos {
-            background: rgba(0, 0, 0, 0.4);
-            width: 40px; 
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16.5px; 
-            font-weight: 800;
-            color: #cbd5e1;
-            border: 1px solid rgba(255,255,255,0.1);
-            overflow: hidden;
-        }
-        
-        .bench-pos img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            background: rgba(0, 0, 0, 0.4); width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16.5px; font-weight: 800; color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .bench-avatar-mini {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-            vertical-align: middle;
-            margin-right: 6px;
-            border: 1.5px solid var(--accent-neon);
-        }
-        
-        .bench-info-name {
-            color: #fff; 
-            font-weight: 600; 
-            display: flex;
-            align-items: center;
-            font-size: 21px; 
-        }
-        
-        .bench-score { 
-            color: var(--accent-neon); 
-            font-weight: 800; 
-            font-size: 17.8px; 
-            margin-top: 4px;
-        }
+        .bench-info-name { color: #fff; font-weight: 600; display: flex; align-items: center; font-size: 21px; }
+        .bench-score { color: var(--accent-neon); font-weight: 800; font-size: 17.8px; margin-top: 4px; }
 
-        .empty-state { 
-            padding: 60px; 
-            color: var(--text-muted); 
-            font-style: italic; 
-            text-align: center;
-            width: 100%;
-        }
+        .empty-state { padding: 60px; color: var(--text-muted); font-style: italic; text-align: center; width: 100%; }
     </style>
 </head>
 <body>
 
     <div class="main-wrapper">
-        <!-- Panel de carga tradicional (Funciona Offline al 100%) -->
-        <div class="upload-section">
-            <label class="btn-upload">
-                <i class="fa-solid fa-file-excel"></i> Importar Datos Planilla
-                <input type="file" id="excel-input" accept=".xlsx, .xls">
-            </label>
-            <p id="file-name" style="margin: 10px 0 0 0; font-size: 12px; color: var(--accent-neon); font-weight: 600;"></p>
+        <div id="status-bar" class="status-bar">
+            <i class="fa-solid fa-satellite-dish fa-bounce"></i> Conectando con los servidores de Google Sheets...
         </div>
 
-        <!-- Encabezados -->
         <div class="header-titles">
             <h2>Mundial FIFA 2026</h2>
-            <p class="subtitle"></p>
         </div>
 
-        <!-- Estado Vacío -->
         <div id="mensaje-inicio" class="empty-state">
-            <i class="fa-solid fa-circle-nodes fa-spin" style="font-size: 40px; color: #818cf8; margin-bottom: 20px; display:block;"></i>
-            Esperando archivo Excel para inicializar el despliegue del estadio...
+            <i class="fa-solid fa-sync fa-spin" style="font-size: 40px; color: #818cf8; margin-bottom: 20px; display:block;"></i>
+            Sincronizando posiciones del estadio virtual en tiempo real...
         </div>
 
-        <!-- Espacio Dividido -->
         <div class="workspace">
-            <!-- CANCHA DE JUEGO -->
             <div class="football-pitch" id="cancha">
                 <div class="pitch-lines"></div>
                 <div class="pitch-area-top"></div>
                 <div class="pitch-area-bot"></div>
             </div>
 
-            <!-- BANCA VERTICAL DE SUPLENTES -->
             <div class="bench-section" id="banca-contenedor">
                 <div class="bench-title"><i class="fa-solid fa-users-viewfinder"></i> Reservas Activos (12+)</div>
                 <div class="bench-vertical-list" id="banca-cuerpo"></div>
@@ -433,60 +306,70 @@
     </div>
 
     <script>
-        const input = document.getElementById('excel-input');
+        // Enlace público configurado en formato CSV
+        const URL_GOOGLE_SHEETS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRaSkZcOTooQwbmjreBN7WVtD5_s_PEJ1N8DOp5s0unXosIbvTRXGimFjKjHAHybcJZllDjiq-_zi0Q/pub?output=csv";
+
         const cancha = document.getElementById('cancha');
         const bancaContenedor = document.getElementById('banca-contenedor');
         const bancaCuerpo = document.getElementById('banca-cuerpo');
         const mensajeInicio = document.getElementById('mensaje-inicio');
-        const fileNameDisplay = document.getElementById('file-name');
+        const statusBar = document.getElementById('status-bar');
 
-        input.addEventListener('change', function(e) {
-            const archivo = e.target.files[0];
-            if (!archivo) return;
+        // Carga automática inicial al abrir la página
+        window.addEventListener('DOMContentLoaded', cargarDatosDesdeNube);
 
-            fileNameDisplay.innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${archivo.name} sincronizado`;
-            const lector = new FileReader();
+        function cargarDatosDesdeNube() {
+            fetch(URL_GOOGLE_SHEETS)
+                .then(response => {
+                    if (!response.ok) throw new Error("No se pudo obtener la información.");
+                    return response.text();
+                })
+                .then(csvTexto => {
+                    procesarCSV(csvTexto);
+                    statusBar.innerHTML = `<i class="fa-solid fa-circle-check"></i> Estadio sincronizado en vivo con Google Sheets`;
+                    statusBar.style.color = "var(--accent-neon)";
+                })
+                .catch(error => {
+                    console.error(error);
+                    statusBar.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Error al conectar con Google Sheets. Verifica la publicación del archivo.`;
+                    statusBar.style.color = "#ef4444";
+                });
+        }
 
-            lector.onload = function(evt) {
-                const data = new Uint8Array(evt.target.result);
-                const libro = XLSX.read(data, { type: 'array' });
-                const nombreHoja = libro.SheetNames[0];
-                const hoja = libro.Sheets[nombreHoja];
-                const filas = XLSX.utils.sheet_to_json(hoja, { header: 1 });
+        function procesarCSV(texto) {
+            const filasRaw = texto.split(/\r?\n/);
+            const filas = filasRaw.map(f => f.split(','));
 
-                procesarDatosMundial(filas);
-                input.value = ''; 
-            };
-            lector.readAsArrayBuffer(archivo);
-        });
+            if (filas.length < 2) return;
 
-        function procesarDatosMundial(filas) {
             const listaJugadores = [];
             let colLugar = 0, colNombre = 1, colPuntaje = 2;
 
+            // Mapeo automático basado en encabezados
             if(filas[0]) {
                 filas[0].forEach((celda, idx) => {
-                    const texto = String(celda).toLowerCase().trim();
-                    if(texto.includes("lug") || texto.includes("pos")) colLugar = idx;
-                    if(texto.includes("nom") || texto.includes("int")) colNombre = idx;
-                    if(texto.includes("pun") || texto.includes("mar")) colPuntaje = idx;
+                    const txt = String(celda).toLowerCase().trim();
+                    if(txt.includes("lug") || txt.includes("pos")) colLugar = idx;
+                    if(txt.includes("nom") || txt.includes("int")) colNombre = idx;
+                    if(txt.includes("pun") || txt.includes("mar")) colPuntaje = idx;
                 });
             }
 
             for (let i = 1; i < filas.length; i++) {
                 const fila = filas[i];
-                if (!fila || fila.length < 2) continue;
+                if (!fila || fila.length < 2 || !fila[colNombre]) continue;
 
                 const pRaw = fila[colPuntaje];
                 const puntosNum = pRaw !== undefined ? parseFloat(pRaw) : 0;
 
                 listaJugadores.push({
                     posOriginal: parseInt(fila[colLugar]) || (listaJugadores.length + 1),
-                    nombre: fila[colNombre] || "Anónimo",
+                    nombre: fila[colNombre].replace(/^"|"$/g, '').trim(),
                     puntos: puntosNum
                 });
             }
 
+            // Ordenar por rendimiento (Puntaje más alto arriba)
             listaJugadores.sort((a, b) => b.puntos - a.puntos);
 
             let rangoActual = 1;
@@ -500,10 +383,7 @@
             renderizarEstadioFijo(listaJugadores);
         }
 
-        function obtenerContenidoAvatar(nombre, lugar) {
-            if (nombre.toLowerCase().trim().includes("marti")) {
-                return `<img src="image_0c9180.png" alt="${nombre}">`;
-            }
+        function obtenerContenidoAvatar(lugar) {
             if (lugar === 1) return "👑";
             if (lugar === 2) return "🥈";
             if (lugar === 3) return "🥉";
@@ -512,8 +392,7 @@
         }
 
         function renderizarEstadioFijo(jugadores) {
-            const elementosViejos = cancha.querySelectorAll('.player-node');
-            elementosViejos.forEach(el => el.remove());
+            cancha.querySelectorAll('.player-node').forEach(el => el.remove());
             bancaCuerpo.innerHTML = "";
 
             mensajeInicio.style.display = "none";
@@ -523,7 +402,7 @@
             const titulares = jugadores.slice(0, 11);
             const suplentes = jugadores.slice(11);
 
-            // Formación fija 1-4-3-2-1
+            // Formación táctica fija 1-4-3-2-1
             const mapaTactico = [
                 { x: 50, y: 88 }, { x: 85, y: 72 }, { x: 62, y: 72 }, { x: 38, y: 72 }, { x: 15, y: 72 },
                 { x: 78, y: 54 }, { x: 50, y: 55 }, { x: 22, y: 54 }, { x: 68, y: 34 }, { x: 32, y: 34 }, { x: 50, y: 16 }
@@ -544,7 +423,7 @@
                 divJugador.style.left = `${coordenadas.x}%`;
                 divJugador.style.top = `${coordenadas.y}%`;
 
-                const avatarContenido = obtenerContenidoAvatar(item.nombre, item.posCalculada);
+                const avatarContenido = obtenerContenidoAvatar(item.posCalculada);
 
                 divJugador.innerHTML = `
                     <div class="avatar">${avatarContenido}</div>
@@ -560,18 +439,12 @@
                 const divSuplente = document.createElement('div');
                 divSuplente.classList.add('bench-player');
                 
-                let visualNombre = "";
-                if (item.nombre.toLowerCase().trim().includes("marti")) {
-                    visualNombre = `<img src="image_0c9180.png" class="bench-avatar-mini" alt="Marti"> ${item.nombre}`;
-                } else {
-                    const emoticonSuplente = obtenerContenidoAvatar(item.nombre, item.posCalculada);
-                    visualNombre = `${emoticonSuplente} ${item.nombre}`;
-                }
+                const emoticonSuplente = obtenerContenidoAvatar(item.posCalculada);
 
                 divSuplente.innerHTML = `
                     <div class="bench-pos">${item.posCalculada}</div>
                     <div style="flex: 1;">
-                        <span class="bench-info-name">${visualNombre}</span>
+                        <span class="bench-info-name">${emoticonSuplente} ${item.nombre}</span>
                         <div class="bench-score">${item.puntos} pts</div>
                     </div>
                 `;
