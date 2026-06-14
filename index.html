@@ -85,7 +85,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* WORKSPACE RESPONSIVO (Por defecto móvil: todo en una sola columna hacia abajo) */
         .workspace {
             display: flex;
             flex-direction: column; 
@@ -94,7 +93,7 @@
             box-sizing: border-box;
         }
 
-        /* CANCHA (Aspect-ratio 1 / 1.2 -> 20% más larga) */
+        /* CANCHA */
         .football-pitch {
             width: 100%;
             aspect-ratio: 1 / 1.2; 
@@ -153,7 +152,7 @@
         .pitch-area-top { top: 0; border-bottom: 2px solid rgba(255,255,255,0.35); }
         .pitch-area-bot { bottom: 0; border-top: 2px solid rgba(255,255,255,0.35); }
 
-        /* EFECTO DE FLOTACIÓN SUTIL (BREATHING) */
+        /* ANIMACIÓN FLOTACIÓN */
         @keyframes flotacionBreathing {
             0% { transform: translate(-50%, -53%); }
             50% { transform: translate(-50%, -47%); }
@@ -257,7 +256,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;
         }
 
-        /* Diseño base móvil por defecto: 1 columna limpia y espaciosa para soportar el +30% */
         .bench-vertical-list { 
             display: grid;
             grid-template-columns: 1fr; 
@@ -265,7 +263,7 @@
             width: 100%;
         }
 
-        /* ELEMENTOS DE LA BANCA (+30% Optimizado y Responsivo) */
+        /* BANCA (+30% de tamaño) */
         .bench-player {
             background: rgba(30, 41, 59, 0.4); 
             padding: 14px 16px; 
@@ -332,70 +330,44 @@
 
         .empty-state { padding: 40px; color: var(--text-muted); font-style: italic; text-align: center; width: 100%; }
 
-        /* ==========================================================================
-           1. MEDIA QUERY PARA TABLETS (Pantallas medianas - desde 650px)
-           ========================================================================== */
+        /* RESPONSIVO: TABLETS */
         @media (min-width: 650px) {
             body { padding: 20px; }
             .main-wrapper { padding: 25px; }
             h2 { font-size: 30px; }
             
-            /* En tablets, la banca se ve mejor distribuida en 2 columnas */
             .bench-vertical-list {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 14px;
             }
-            
-            /* Subimos levemente los tamaños de la banca */
             .bench-player { padding: 15px 18px; gap: 16px; }
             .bench-avatar-frame, .bench-pos { width: 52px; height: 52px; font-size: 20px; }
             .bench-info-name { font-size: 20px; }
             .bench-score { font-size: 18px; }
         }
 
-        /* ==========================================================================
-           2. MEDIA QUERY PARA NOTEBOOKS / PC (Pantallas grandes - desde 992px)
-           ========================================================================== */
+        /* RESPONSIVO: NOTEBOOKS / PC */
         @media (min-width: 992px) {
             body { padding: 30px; }
             .main-wrapper { padding: 35px; }
             h2 { font-size: 36px; }
             
-            /* Activamos el diseño lado a lado (Cancha izquierda / Banca derecha) */
             .workspace {
                 flex-direction: row;
                 align-items: flex-start;
                 justify-content: space-between;
                 gap: 25px;
             }
-            
-            /* Ajustamos los anchos fijos de la estructura en PC */
-            .football-pitch {
-                display: block;
-                flex: 0 0 58%;
-                max-width: 730px;
-            }
+            .football-pitch { display: block; flex: 0 0 58%; max-width: 730px; }
+            .bench-section { display: block; flex: 0 0 40%; align-self: stretch; }
+            .bench-vertical-list { grid-template-columns: 1fr; gap: 14px; }
 
-            .bench-section {
-                display: block;
-                flex: 0 0 40%;
-                align-self: stretch; 
-            }
-
-            /* Volvemos a lista continua de 1 sola columna en el panel derecho */
-            .bench-vertical-list {
-                grid-template-columns: 1fr;
-                gap: 14px;
-            }
-
-            /* Valores definitivos con el 30% de aumento optimizados para PC */
             .bench-player { padding: 16px 20px; gap: 18px; }
             .bench-avatar-frame { width: 58px; height: 58px; font-size: 22px; }
             .bench-pos { width: 58px; height: 58px; font-size: 20px; }
             .bench-info-name { font-size: 21px; }
             .bench-score { font-size: 19px; }
 
-            /* Fijamos los tamaños de los textos y avatares fijos de los titulares en la cancha */
             .avatar { font-size: 26px; }
             .p-pos-1 .avatar { font-size: 36px; width: 100px; height: 100px; } 
             .p-pos-2 .avatar { font-size: 32px; width: 92px; height: 92px; }
@@ -439,7 +411,6 @@
     </div>
 
     <script>
-        // Enlace público de tu Google Sheets (Formato CSV seguro)
         const BASE_URL_SHEETS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRaSkZcOTooQwbmjreBN7WVtD5_s_PEJ1N8DOp5s0unXosIbvTRXGimFjKjHAHybcJZllDjiq-_zi0Q/pub?output=csv";
 
         const cancha = document.getElementById('cancha');
@@ -451,7 +422,6 @@
         window.addEventListener('DOMContentLoaded', cargarDatosDesdeNube);
 
         function cargarDatosDesdeNube() {
-            // Se inyecta un timestamp dinámico para obligar a Google a entregar datos frescos sin caché local
             const urlConRompeCache = `${BASE_URL_SHEETS}&cachebuster=${new Date().getTime()}`;
 
             fetch(urlConRompeCache)
@@ -480,7 +450,6 @@
             const listaJugadores = [];
             let colLugar = 0, colNombre = 1, colPuntaje = 2, colFoto = -1;
 
-            // Mapeo dinámico e inteligente de columnas según las cabeceras de tu Sheet
             if(filas[0]) {
                 filas[0].forEach((celda, idx) => {
                     const txt = String(celda).toLowerCase().trim();
@@ -511,16 +480,20 @@
                 });
             }
 
-            // Ordenación automática por rendimiento estricto de mayor a menor puntuación
+            // 1. Ordenamos estrictamente de mayor a menor puntaje
             listaJugadores.sort((a, b) => b.puntos - a.puntos);
 
-            // Cálculo dinámico de posiciones considerando empates matemáticos reales
-            let rangoActual = 1;
+            // [CAMBIO CLAVE] LÓGICA DE RANKING CONSECUTIVO (DENSE RANK)
+            let rangoConsecutivo = 1;
             listaJugadores.forEach((jugador, index) => {
-                if (index > 0 && jugador.puntos < listaJugadores[index - 1].puntos) {
-                    rangoActual = index + 1;
+                if (index > 0) {
+                    // Si el puntaje es menor que el anterior, avanzamos SOLO 1 número de puesto
+                    if (jugador.puntos < listaJugadores[index - 1].puntos) {
+                        rangoConsecutivo++;
+                    }
+                    // Si empatan el puntaje, se mantiene exactamente el mismo rangoConsecutivo actual
                 }
-                jugador.posCalculada = rangoActual;
+                jugador.posCalculada = rangoConsecutivo;
             });
 
             renderizarEstadioFijo(listaJugadores);
@@ -542,10 +515,10 @@
             cancha.style.display = "block";
             bancaContenedor.style.display = "block";
 
+            // Tomamos los primeros 11 registros ordenados para la cancha (titulares)
             const titulares = jugadores.slice(0, 11);
             const suplentes = jugadores.slice(11);
 
-            // Coordenadas calculadas al milímetro para soportar el aspect-ratio 1/1.2 de la cancha
             const mapaTactico = [
                 { x: 50, y: 90 }, { x: 84, y: 76 }, { x: 61, y: 76 }, { x: 39, y: 76 }, { x: 16, y: 76 },
                 { x: 76, y: 56 }, { x: 50, y: 56 }, { x: 24, y: 56 }, { x: 70, y: 32 }, { x: 30, y: 32 }, { x: 50, y: 14 }
