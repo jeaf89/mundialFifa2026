@@ -237,6 +237,24 @@
         .p-pos-3 .player-info { border-color: var(--bronze); }
         .p-normal .avatar { background: linear-gradient(135deg, #1d4ed8, #0b1329); border-color: rgba(0, 255, 170, 0.7); }
 
+        /* Estilos del Cumpleaños de Patrick */
+        .birthday-crown-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .birthday-hat {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translate(-50%, 0) rotate(-10deg);
+            font-size: 24px;
+            z-index: 20;
+            pointer-events: none;
+        }
+
         /* BANCA DE RESERVAS */
         .bench-section {
             width: 100%; 
@@ -377,6 +395,11 @@
             .player-node { width: auto; }
             .player-info { font-size: 13px; min-width: 105px; padding: 3px 6px; }
             .p-pos-1 .player-info { font-size: 14px; }
+
+            .birthday-hat {
+                top: -26px;
+                font-size: 32px;
+            }
         }
     </style>
 </head>
@@ -483,15 +506,13 @@
             // 1. Ordenamos estrictamente de mayor a menor puntaje
             listaJugadores.sort((a, b) => b.puntos - a.puntos);
 
-            // [CAMBIO CLAVE] LÓGICA DE RANKING CONSECUTIVO (DENSE RANK)
+            // LÓGICA DE RANKING CONSECUTIVO (DENSE RANK)
             let rangoConsecutivo = 1;
             listaJugadores.forEach((jugador, index) => {
                 if (index > 0) {
-                    // Si el puntaje es menor que el anterior, avanzamos SOLO 1 número de puesto
                     if (jugador.puntos < listaJugadores[index - 1].puntos) {
                         rangoConsecutivo++;
                     }
-                    // Si empatan el puntaje, se mantiene exactamente el mismo rangoConsecutivo actual
                 }
                 jugador.posCalculada = rangoConsecutivo;
             });
@@ -519,6 +540,7 @@
             const titulares = jugadores.slice(0, 11);
             const suplentes = jugadores.slice(11);
 
+            // [SE MANTIENE EL MAPA TÁCTICO ORIGINAL INTEGRAL]
             const mapaTactico = [
                 { x: 50, y: 90 }, { x: 84, y: 76 }, { x: 61, y: 76 }, { x: 39, y: 76 }, { x: 16, y: 76 },
                 { x: 76, y: 56 }, { x: 50, y: 56 }, { x: 24, y: 56 }, { x: 70, y: 32 }, { x: 30, y: 32 }, { x: 50, y: 14 }
@@ -543,8 +565,15 @@
                     ? `<img src="${item.foto}" alt="${item.nombre}">` 
                     : obtenerContenidoAvatar(item.posCalculada);
 
+                // Detectar si el jugador es Patrick para inyectar el sombrero 🥳
+                const esPatrick = item.nombre.toLowerCase().includes("patrick");
+                const sombreroHTML = esPatrick ? `<span class="birthday-hat">🥳</span>` : '';
+
                 divJugador.innerHTML = `
-                    <div class="avatar">${avatarContenido}</div>
+                    <div class="birthday-crown-container">
+                        ${sombreroHTML}
+                        <div class="avatar">${avatarContenido}</div>
+                    </div>
                     <div class="player-info">
                         <strong>${item.posCalculada}. ${item.nombre}</strong>
                         <span class="player-score">${item.puntos} PTS</span>
@@ -561,9 +590,16 @@
                     ? `<img src="${item.foto}" alt="${item.nombre}">` 
                     : obtenerContenidoAvatar(item.posCalculada);
 
+                // Detectar si Patrick está en la banca para colocarle un mini emoji festivo
+                const esPatrick = item.nombre.toLowerCase().includes("patrick");
+                const sombreroHTML = esPatrick ? `<span style="position: absolute; top: -8px; right: -4px; font-size: 18px; z-index: 5;">🥳</span>` : '';
+
                 divSuplente.innerHTML = `
                     <div class="bench-pos">${item.posCalculada}</div>
-                    <div class="bench-avatar-frame">${avatarContenidoSuplente}</div>
+                    <div class="bench-avatar-frame" style="position: relative;">
+                        ${sombreroHTML}
+                        ${avatarContenidoSuplente}
+                    </div>
                     <div class="bench-info-container">
                         <span class="bench-info-name">${item.nombre}</span>
                         <div class="bench-score">${item.puntos} pts</div>
