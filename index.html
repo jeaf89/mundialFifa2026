@@ -43,7 +43,7 @@
 
         .main-wrapper {
             width: 100%;
-            max-width: 1350px; 
+            max-width: 1550px; /* +20% de utilización del espacio horizontal máximo */
             background: var(--panel-bg);
             backdrop-filter: blur(20px);
             padding: 15px;
@@ -152,7 +152,7 @@
         .pitch-area-top { top: 0; border-bottom: 2px solid rgba(255,255,255,0.35); }
         .pitch-area-bot { bottom: 0; border-top: 2px solid rgba(255,255,255,0.35); }
 
-        /* ANIMACIÓN FLOTACIÓN */
+        /* ANIMACIÓN FLOTACIÓN (+20% DE VELOCIDAD: tiempos reducidos de 4.5s a 3.6s) */
         @keyframes flotacionBreathing {
             0% { transform: translate(-50%, -53%); }
             50% { transform: translate(-50%, -47%); }
@@ -167,11 +167,11 @@
             transform: translate(-50%, -50%);
             z-index: 10;
             width: 14%; 
-            animation: flotacionBreathing 4.5s ease-in-out infinite;
+            animation: flotacionBreathing 3.6s ease-in-out infinite;
         }
 
-        .player-node:nth-child(odd) { animation-delay: 0.6s; animation-duration: 4.8s; }
-        .player-node:nth-child(3n) { animation-delay: 1.3s; animation-duration: 4.2s; }
+        .player-node:nth-child(odd) { animation-delay: 0.48s; animation-duration: 3.8s; }
+        .player-node:nth-child(3n) { animation-delay: 1.0s; animation-duration: 3.3s; }
 
         .avatar {
             width: 100%;
@@ -237,7 +237,7 @@
         .p-pos-3 .player-info { border-color: var(--bronze); }
         .p-normal .avatar { background: linear-gradient(135deg, #1d4ed8, #0b1329); border-color: rgba(0, 255, 170, 0.7); }
 
-        /* Estilos del Cumpleaños de Patrick */
+        /* Estilos del Cumpleaños de Patrick y Efectos */
         .birthday-crown-container {
             position: relative;
             width: 100%;
@@ -253,6 +253,46 @@
             font-size: 24px;
             z-index: 20;
             pointer-events: none;
+        }
+
+        /* Letrero Flotante "Feliz Cumpleaños" */
+        .birthday-banner {
+            position: absolute;
+            top: -45px;
+            background: linear-gradient(45deg, #ff007f, #7928ca);
+            color: white;
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4), 0 0 10px rgba(236, 72, 153, 0.5);
+            font-weight: 800;
+            z-index: 25;
+            animation: popInBanner 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        @keyframes popInBanner {
+            0% { transform: scale(0) translateY(15px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        /* Contenedor de Serpentinas de Confeti */
+        .serpentina-particle {
+            position: absolute;
+            width: 4px;
+            height: 12px;
+            border-radius: 2px;
+            opacity: 0;
+            z-index: 5;
+            pointer-events: none;
+            animation: caerSerpentina 2.5s ease-out infinite;
+        }
+
+        @keyframes caerSerpentina {
+            0% { transform: translateY(-30px) translateX(0) rotate(0deg); opacity: 1; }
+            70% { opacity: 1; }
+            100% { transform: translateY(60px) translateX(var(--dir-x, 20px)) rotate(360deg); opacity: 0; }
         }
 
         /* BANCA DE RESERVAS */
@@ -281,7 +321,6 @@
             width: 100%;
         }
 
-        /* BANCA (+30% de tamaño) */
         .bench-player {
             background: rgba(30, 41, 59, 0.4); 
             padding: 14px 16px; 
@@ -364,10 +403,10 @@
             .bench-score { font-size: 18px; }
         }
 
-        /* RESPONSIVO: NOTEBOOKS / PC */
+        /* RESPONSIVO: NOTEBOOKS / PC (+20% de utilización de espacio de trabajo activo) */
         @media (min-width: 992px) {
-            body { padding: 30px; }
-            .main-wrapper { padding: 35px; }
+            body { padding: 20px 30px; }
+            .main-wrapper { padding: 25px 35px; }
             h2 { font-size: 36px; }
             
             .workspace {
@@ -376,8 +415,10 @@
                 justify-content: space-between;
                 gap: 25px;
             }
-            .football-pitch { display: block; flex: 0 0 58%; max-width: 730px; }
-            .bench-section { display: block; flex: 0 0 40%; align-self: stretch; }
+            /* Pasamos del 58% original al 64% para rellenar mejor la pantalla grande */
+            .football-pitch { display: block; flex: 0 0 64%; max-width: 950px; }
+            /* Pasamos del 40% al 34% empujando los márgenes hacia los bordes */
+            .bench-section { display: block; flex: 0 0 34%; align-self: stretch; }
             .bench-vertical-list { grid-template-columns: 1fr; gap: 14px; }
 
             .bench-player { padding: 16px 20px; gap: 18px; }
@@ -399,6 +440,11 @@
             .birthday-hat {
                 top: -26px;
                 font-size: 32px;
+            }
+            .birthday-banner {
+                top: -60px;
+                font-size: 13px;
+                padding: 5px 12px;
             }
         }
     </style>
@@ -503,10 +549,8 @@
                 });
             }
 
-            // 1. Ordenamos estrictamente de mayor a menor puntaje
             listaJugadores.sort((a, b) => b.puntos - a.puntos);
 
-            // LÓGICA DE RANKING CONSECUTIVO (DENSE RANK)
             let rangoConsecutivo = 1;
             listaJugadores.forEach((jugador, index) => {
                 if (index > 0) {
@@ -528,6 +572,20 @@
             return "🏃‍♂️";
         }
 
+        // Función generadora de serpentinas festivas de confeti sobre Patrick
+        function inyectarSerpentinasEfecto(contenedor) {
+            const colores = ['#ff007f', '#00ffaa', '#06b6d4', '#f59e0b', '#e0e7ff', '#ff0055'];
+            for (let i = 0; i < 12; i++) {
+                const particula = document.createElement('span');
+                particula.classList.add('serpentina-particle');
+                particula.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
+                particula.style.left = `${Math.random() * 80 + 10}%`;
+                particula.style.animationDelay = `${Math.random() * 1.5}s`;
+                particula.style.setProperty('--dir-x', `${(Math.random() * 40) - 20}px`);
+                contenedor.appendChild(particula);
+            }
+        }
+
         function renderizarEstadioFijo(jugadores) {
             cancha.querySelectorAll('.player-node').forEach(el => el.remove());
             bancaCuerpo.innerHTML = "";
@@ -536,11 +594,9 @@
             cancha.style.display = "block";
             bancaContenedor.style.display = "block";
 
-            // Tomamos los primeros 11 registros ordenados para la cancha (titulares)
             const titulares = jugadores.slice(0, 11);
             const suplentes = jugadores.slice(11);
 
-            // [SE MANTIENE EL MAPA TÁCTICO ORIGINAL INTEGRAL]
             const mapaTactico = [
                 { x: 50, y: 90 }, { x: 84, y: 76 }, { x: 61, y: 76 }, { x: 39, y: 76 }, { x: 16, y: 76 },
                 { x: 76, y: 56 }, { x: 50, y: 56 }, { x: 24, y: 56 }, { x: 70, y: 32 }, { x: 30, y: 32 }, { x: 50, y: 14 }
@@ -565,13 +621,16 @@
                     ? `<img src="${item.foto}" alt="${item.nombre}">` 
                     : obtenerContenidoAvatar(item.posCalculada);
 
-                // Detectar si el jugador es Patrick para inyectar el sombrero 🥳
                 const esPatrick = item.nombre.toLowerCase().includes("patrick");
+                
+                // Elementos nuevos: Sombrero + Letrero Flotante de Cumpleaños
                 const sombreroHTML = esPatrick ? `<span class="birthday-hat">🥳</span>` : '';
+                const letreroHTML = esPatrick ? `<div class="birthday-banner">🎂 ¡Feliz Cumpleaños!</div>` : '';
 
                 divJugador.innerHTML = `
-                    <div class="birthday-crown-container">
+                    <div class="birthday-crown-container" id="${esPatrick ? 'patrick-celebracion-box' : ''}">
                         ${sombreroHTML}
+                        ${letreroHTML}
                         <div class="avatar">${avatarContenido}</div>
                     </div>
                     <div class="player-info">
@@ -580,6 +639,12 @@
                     </div>
                 `;
                 cancha.appendChild(divJugador);
+
+                // Si es Patrick titular, activamos las serpentinas animadas inmediatemente
+                if(esPatrick) {
+                    const contenedorEfectos = divJugador.querySelector('#patrick-celebracion-box');
+                    inyectarSerpentinasEfecto(contenedorEfectos);
+                }
             });
 
             suplentes.forEach(item => {
@@ -590,13 +655,12 @@
                     ? `<img src="${item.foto}" alt="${item.nombre}">` 
                     : obtenerContenidoAvatar(item.posCalculada);
 
-                // Detectar si Patrick está en la banca para colocarle un mini emoji festivo
                 const esPatrick = item.nombre.toLowerCase().includes("patrick");
                 const sombreroHTML = esPatrick ? `<span style="position: absolute; top: -8px; right: -4px; font-size: 18px; z-index: 5;">🥳</span>` : '';
 
                 divSuplente.innerHTML = `
                     <div class="bench-pos">${item.posCalculada}</div>
-                    <div class="bench-avatar-frame" style="position: relative;">
+                    <div class="bench-avatar-frame" style="position: relative;" id="${esPatrick ? 'patrick-bench-box' : ''}">
                         ${sombreroHTML}
                         ${avatarContenidoSuplente}
                     </div>
@@ -606,6 +670,12 @@
                     </div>
                 `;
                 bancaCuerpo.appendChild(divSuplente);
+
+                // Si Patrick está en la banca, también le lloverán serpentinas en miniatura
+                if(esPatrick) {
+                    const contenedorEfectosBanca = divSuplente.querySelector('#patrick-bench-box');
+                    inyectarSerpentinasEfecto(contenedorEfectosBanca);
+                }
             });
         }
     </script>
