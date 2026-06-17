@@ -43,7 +43,7 @@
 
         .main-wrapper {
             width: 100%;
-            max-width: 1550px; /* +20% de utilización del espacio horizontal máximo */
+            max-width: 1550px; 
             background: var(--panel-bg);
             backdrop-filter: blur(20px);
             padding: 15px;
@@ -152,7 +152,7 @@
         .pitch-area-top { top: 0; border-bottom: 2px solid rgba(255,255,255,0.35); }
         .pitch-area-bot { bottom: 0; border-top: 2px solid rgba(255,255,255,0.35); }
 
-        /* ANIMACIÓN FLOTACIÓN (+20% DE VELOCIDAD: tiempos reducidos de 4.5s a 3.6s) */
+        /* ANIMACIÓN FLOTACIÓN (+20% DE VELOCIDAD) */
         @keyframes flotacionBreathing {
             0% { transform: translate(-50%, -53%); }
             50% { transform: translate(-50%, -47%); }
@@ -237,7 +237,7 @@
         .p-pos-3 .player-info { border-color: var(--bronze); }
         .p-normal .avatar { background: linear-gradient(135deg, #1d4ed8, #0b1329); border-color: rgba(0, 255, 170, 0.7); }
 
-        /* Estilos del Cumpleaños de Patrick y Efectos */
+        /* --- Estilos Especiales de Cumpleaños para Liz --- */
         .birthday-crown-container {
             position: relative;
             width: 100%;
@@ -245,27 +245,27 @@
             justify-content: center;
         }
 
-        .birthday-hat {
+        .birthday-rose {
             position: absolute;
             top: -18px;
             left: 50%;
-            transform: translate(-50%, 0) rotate(-10deg);
+            transform: translate(-50%, 0) rotate(-5deg);
             font-size: 24px;
             z-index: 20;
             pointer-events: none;
         }
 
-        /* Letrero Flotante "Feliz Cumpleaños" */
+        /* Letrero Flotante "Feliz Cumpleaños" de Liz */
         .birthday-banner {
             position: absolute;
             top: -45px;
-            background: linear-gradient(45deg, #ff007f, #7928ca);
+            background: linear-gradient(45deg, #ec4899, #f43f5e);
             color: white;
             font-size: 10px;
             padding: 4px 8px;
             border-radius: 20px;
             white-space: nowrap;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4), 0 0 10px rgba(236, 72, 153, 0.5);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4), 0 0 10px rgba(244, 63, 94, 0.5);
             font-weight: 800;
             z-index: 25;
             animation: popInBanner 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
@@ -277,7 +277,7 @@
             100% { transform: scale(1) translateY(0); opacity: 1; }
         }
 
-        /* Contenedor de Serpentinas de Confeti */
+        /* Partículas de Serpentinas */
         .serpentina-particle {
             position: absolute;
             width: 4px;
@@ -403,7 +403,7 @@
             .bench-score { font-size: 18px; }
         }
 
-        /* RESPONSIVO: NOTEBOOKS / PC (+20% de utilización de espacio de trabajo activo) */
+        /* RESPONSIVO: NOTEBOOKS / PC (+20% de utilización de espacio) */
         @media (min-width: 992px) {
             body { padding: 20px 30px; }
             .main-wrapper { padding: 25px 35px; }
@@ -415,9 +415,7 @@
                 justify-content: space-between;
                 gap: 25px;
             }
-            /* Pasamos del 58% original al 64% para rellenar mejor la pantalla grande */
             .football-pitch { display: block; flex: 0 0 64%; max-width: 950px; }
-            /* Pasamos del 40% al 34% empujando los márgenes hacia los bordes */
             .bench-section { display: block; flex: 0 0 34%; align-self: stretch; }
             .bench-vertical-list { grid-template-columns: 1fr; gap: 14px; }
 
@@ -437,7 +435,7 @@
             .player-info { font-size: 13px; min-width: 105px; padding: 3px 6px; }
             .p-pos-1 .player-info { font-size: 14px; }
 
-            .birthday-hat {
+            .birthday-rose {
                 top: -26px;
                 font-size: 32px;
             }
@@ -572,9 +570,9 @@
             return "🏃‍♂️";
         }
 
-        // Función generadora de serpentinas festivas de confeti sobre Patrick
+        // Generador de serpentinas festivas
         function inyectarSerpentinasEfecto(contenedor) {
-            const colores = ['#ff007f', '#00ffaa', '#06b6d4', '#f59e0b', '#e0e7ff', '#ff0055'];
+            const colores = ['#ff007f', '#00ffaa', '#06b6d4', '#f59e0b', '#ec4899', '#ffdd00'];
             for (let i = 0; i < 12; i++) {
                 const particula = document.createElement('span');
                 particula.classList.add('serpentina-particle');
@@ -621,15 +619,14 @@
                     ? `<img src="${item.foto}" alt="${item.nombre}">` 
                     : obtenerContenidoAvatar(item.posCalculada);
 
-                const esPatrick = item.nombre.toLowerCase().includes("patrick");
-                
-                // Elementos nuevos: Sombrero + Letrero Flotante de Cumpleaños
-                const sombreroHTML = esPatrick ? `<span class="birthday-hat">🥳</span>` : '';
-                const letreroHTML = esPatrick ? `<div class="birthday-banner">🎂 ¡Feliz Cumpleaños!</div>` : '';
+                // Nueva lógica: Buscar a Liz para celebrar su cumpleaños
+                const esLiz = item.nombre.toLowerCase().includes("liz");
+                const rosaHTML = esLiz ? `<span class="birthday-rose">🌹</span>` : '';
+                const letreroHTML = esLiz ? `<div class="birthday-banner">🎂 ¡Feliz Cumpleaños!</div>` : '';
 
                 divJugador.innerHTML = `
-                    <div class="birthday-crown-container" id="${esPatrick ? 'patrick-celebracion-box' : ''}">
-                        ${sombreroHTML}
+                    <div class="birthday-crown-container" id="${esLiz ? 'liz-celebracion-box' : ''}">
+                        ${rosaHTML}
                         ${letreroHTML}
                         <div class="avatar">${avatarContenido}</div>
                     </div>
@@ -640,9 +637,8 @@
                 `;
                 cancha.appendChild(divJugador);
 
-                // Si es Patrick titular, activamos las serpentinas animadas inmediatemente
-                if(esPatrick) {
-                    const contenedorEfectos = divJugador.querySelector('#patrick-celebracion-box');
+                if(esLiz) {
+                    const contenedorEfectos = divJugador.querySelector('#liz-celebracion-box');
                     inyectarSerpentinasEfecto(contenedorEfectos);
                 }
             });
@@ -655,13 +651,13 @@
                     ? `<img src="${item.foto}" alt="${item.nombre}">` 
                     : obtenerContenidoAvatar(item.posCalculada);
 
-                const esPatrick = item.nombre.toLowerCase().includes("patrick");
-                const sombreroHTML = esPatrick ? `<span style="position: absolute; top: -8px; right: -4px; font-size: 18px; z-index: 5;">🥳</span>` : '';
+                const esLiz = item.nombre.toLowerCase().includes("liz");
+                const rosaHTML = esLiz ? `<span style="position: absolute; top: -8px; right: -4px; font-size: 18px; z-index: 5;">🌹</span>` : '';
 
                 divSuplente.innerHTML = `
                     <div class="bench-pos">${item.posCalculada}</div>
-                    <div class="bench-avatar-frame" style="position: relative;" id="${esPatrick ? 'patrick-bench-box' : ''}">
-                        ${sombreroHTML}
+                    <div class="bench-avatar-frame" style="position: relative;" id="${esLiz ? 'liz-bench-box' : ''}">
+                        ${rosaHTML}
                         ${avatarContenidoSuplente}
                     </div>
                     <div class="bench-info-container">
@@ -671,9 +667,8 @@
                 `;
                 bancaCuerpo.appendChild(divSuplente);
 
-                // Si Patrick está en la banca, también le lloverán serpentinas en miniatura
-                if(esPatrick) {
-                    const contenedorEfectosBanca = divSuplente.querySelector('#patrick-bench-box');
+                if(esLiz) {
+                    const contenedorEfectosBanca = divSuplente.querySelector('#liz-bench-box');
                     inyectarSerpentinasEfecto(contenedorEfectosBanca);
                 }
             });
