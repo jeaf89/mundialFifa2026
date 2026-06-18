@@ -39,30 +39,11 @@
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
-            position: relative;
-        }
-
-        /* [NUEVO] Iluminación ambiental de reflectores de estadio en el fondo */
-        body::before {
-            content: '';
-            position: fixed;
-            top: -10%; left: -10%; width: 60vw; height: 60vw;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%);
-            z-index: -1;
-            pointer-events: none;
-        }
-        body::after {
-            content: '';
-            position: fixed;
-            bottom: -10%; right: -10%; width: 50vw; height: 50vw;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
-            z-index: -1;
-            pointer-events: none;
         }
 
         .main-wrapper {
             width: 100%;
-            max-width: 1550px; 
+            max-width: 1350px; 
             background: var(--panel-bg);
             backdrop-filter: blur(20px);
             padding: 15px;
@@ -112,31 +93,22 @@
             box-sizing: border-box;
         }
 
-        /* CANCHA (Mejorada estéticamente con franjas verticales de podado) */
+        /* CANCHA */
         .football-pitch {
             width: 100%;
             aspect-ratio: 1 / 1.2; 
             height: auto; 
             background: 
-                linear-gradient(rgba(2, 6, 23, 0.15) 0%, rgba(2, 6, 23, 0.55) 100%),
-                repeating-linear-gradient(90deg, var(--grass-green), var(--grass-green) 6%, var(--grass-light) 6%, var(--grass-light) 12%);
+                linear-gradient(rgba(2, 6, 23, 0.2) 0%, rgba(2, 6, 23, 0.6) 100%),
+                linear-gradient(180deg, var(--grass-green) 50%, var(--grass-light) 50%);
+            background-size: 100% 100%, 100% 7%;
             border-radius: 16px;
-            border: 2.5px solid rgba(255, 255, 255, 0.85);
+            border: 2.5px solid rgba(255, 255, 255, 0.8);
             position: relative;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.85), 0 15px 35px rgba(0,0,0,0.65);
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 12px 28px rgba(0,0,0,0.6);
             overflow: hidden;
             display: none;
             box-sizing: border-box;
-        }
-
-        /* [NUEVO] Arcos de Tiro de Esquina CSS */
-        .football-pitch::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 14px; height: 14px;
-            border-bottom: 2px solid rgba(255,255,255,0.4); border-right: 2px solid rgba(255,255,255,0.4); border-radius: 0 0 100% 0; pointer-events: none;
-        }
-        .football-pitch::after {
-            content: ''; position: absolute; top: 0; right: 0; width: 14px; height: 14px;
-            border-bottom: 2px solid rgba(255,255,255,0.4); border-left: 2px solid rgba(255,255,255,0.4); border-radius: 0 0 0 100%; pointer-events: none;
         }
 
         .pitch-lines {
@@ -147,27 +119,25 @@
             left: 0;
             pointer-events: none;
         }
-        /* Añadido soporte para esquinas inferiores en el contenedor interno de líneas */
         .pitch-lines::before {
-            content: ''; position: absolute; bottom: 0; left: 0; width: 14px; height: 14px;
-            border-top: 2px solid rgba(255,255,255,0.4); border-right: 2px solid rgba(255,255,255,0.4); border-radius: 0 100% 0 0;
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255,255,255,0.4);
         }
         .pitch-lines::after {
-            content: ''; position: absolute; bottom: 0; right: 0; width: 14px; height: 14px;
-            border-top: 2px solid rgba(255,255,255,0.4); border-left: 2px solid rgba(255,255,255,0.4); border-radius: 100% 0 0 0;
-        }
-
-        .pitch-center-line {
+            content: '';
             position: absolute;
-            top: 50%; left: 0; width: 100%; height: 2px;
-            background: rgba(255,255,255,0.4);
-            pointer-events: none;
-        }
-        .pitch-center-circle {
-            position: absolute;
-            top: 50%; left: 50%; width: 20%; aspect-ratio: 1 / 1;
-            border: 2px solid rgba(255,255,255,0.4); border-radius: 50%;
-            transform: translate(-50%, -50%); pointer-events: none;
+            top: 50%;
+            left: 50%;
+            width: 20%;
+            aspect-ratio: 1 / 1;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .pitch-area-top, .pitch-area-bot {
@@ -182,22 +152,11 @@
         .pitch-area-top { top: 0; border-bottom: 2px solid rgba(255,255,255,0.35); }
         .pitch-area-bot { bottom: 0; border-top: 2px solid rgba(255,255,255,0.35); }
 
-        /* ANIMACIÓN FLOTACIÓN (+20% DE VELOCIDAD) */
+        /* ANIMACIÓN FLOTACIÓN */
         @keyframes flotacionBreathing {
             0% { transform: translate(-50%, -53%); }
             50% { transform: translate(-50%, -47%); }
             100% { transform: translate(-50%, -53%); }
-        }
-
-        /* [NUEVO] Animaciones de Pulso Glow para Líderes del Podio */
-        @keyframes goldGlow { 
-            0% { box-shadow: 0 0 8px rgba(251, 191, 36, 0.4); } 50% { box-shadow: 0 0 20px rgba(251, 191, 36, 0.8); } 100% { box-shadow: 0 0 8px rgba(251, 191, 36, 0.4); } 
-        }
-        @keyframes silverGlow { 
-            0% { box-shadow: 0 0 8px rgba(255, 255, 255, 0.3); } 50% { box-shadow: 0 0 18px rgba(255, 255, 255, 0.7); } 100% { box-shadow: 0 0 8px rgba(255, 255, 255, 0.3); } 
-        }
-        @keyframes bronzeGlow { 
-            0% { box-shadow: 0 0 8px rgba(234, 88, 12, 0.3); } 50% { box-shadow: 0 0 16px rgba(234, 88, 12, 0.6); } 100% { box-shadow: 0 0 8px rgba(234, 88, 12, 0.3); } 
         }
 
         .player-node {
@@ -208,11 +167,11 @@
             transform: translate(-50%, -50%);
             z-index: 10;
             width: 14%; 
-            animation: flotacionBreathing 3.6s ease-in-out infinite;
+            animation: flotacionBreathing 4.5s ease-in-out infinite;
         }
 
-        .player-node:nth-child(odd) { animation-delay: 0.48s; animation-duration: 3.8s; }
-        .player-node:nth-child(3n) { animation-delay: 1.0s; animation-duration: 3.3s; }
+        .player-node:nth-child(odd) { animation-delay: 0.6s; animation-duration: 4.8s; }
+        .player-node:nth-child(3n) { animation-delay: 1.3s; animation-duration: 4.2s; }
 
         .avatar {
             width: 100%;
@@ -235,7 +194,7 @@
             scale: 1.15;
             border-color: #ffffff;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0, 255, 170, 0.4) !important;
+            box-shadow: 0 10px 25px rgba(0, 255, 170, 0.4);
         }
 
         .avatar img {
@@ -268,25 +227,15 @@
             margin-top: 1px;
         }
 
-        /* Estilos de podio con [NUEVO] Glow Intermitente Integrado */
-        .p-pos-1 .avatar { background: linear-gradient(135deg, #fbbf24, #d97706); border-color: #fff3c4; animation: flotacionBreathing 3.6s ease-in-out infinite, goldGlow 2s infinite ease-in-out; scale: 1.06; }
+        /* Estilos de podio */
+        .p-pos-1 .avatar { background: linear-gradient(135deg, #fbbf24, #d97706); border-color: #fff3c4; box-shadow: 0 0 15px rgba(251, 191, 36, 0.5); scale: 1.06; }
         .p-pos-1 .player-info { border-color: var(--gold); } 
         .p-pos-1 .player-score { color: #fef08a; }
-        
-        .p-pos-2 .avatar { background: linear-gradient(135deg, #f1f5f9, #64748b); border-color: #ffffff; animation: flotacionBreathing 3.6s ease-in-out infinite, silverGlow 2s infinite ease-in-out; scale: 1.06; }
+        .p-pos-2 .avatar { background: linear-gradient(135deg, #f1f5f9, #64748b); border-color: #ffffff; box-shadow: 0 0 12px rgba(255,255,255,0.3); scale: 1.06; }
         .p-pos-2 .player-info { border-color: var(--silver); }
-        
-        .p-pos-3 .avatar { background: linear-gradient(135deg, #ea580c, #9a3412); border-color: #ffedd5; animation: flotacionBreathing 3.6s ease-in-out infinite, bronzeGlow 2s infinite ease-in-out; scale: 1.04; }
+        .p-pos-3 .avatar { background: linear-gradient(135deg, #ea580c, #9a3412); border-color: #ffedd5; box-shadow: 0 0 10px rgba(234, 88, 12, 0.4); scale: 1.04; }
         .p-pos-3 .player-info { border-color: var(--bronze); }
-        
         .p-normal .avatar { background: linear-gradient(135deg, #1d4ed8, #0b1329); border-color: rgba(0, 255, 170, 0.7); }
-
-        .birthday-crown-container {
-            position: relative;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-        }
 
         /* BANCA DE RESERVAS */
         .bench-section {
@@ -314,23 +263,21 @@
             width: 100%;
         }
 
-        /* [NUEVO] Estilo Glassmorphic translúcido prémium para las tarjetas de banca */
+        /* BANCA (+30% de tamaño) */
         .bench-player {
-            background: rgba(30, 41, 59, 0.25); 
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(30, 41, 59, 0.4); 
             padding: 14px 16px; 
             border-radius: 14px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3); 
-            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2); 
+            border: 1px solid rgba(255,255,255,0.03);
             display: flex; 
             align-items: center; 
             gap: 15px; 
-            transition: all 0.25s ease;
+            transition: all 0.25s;
             box-sizing: border-box;
             width: 100%;
         }
-        .bench-player:hover { background: rgba(30, 41, 59, 0.55); border-color: var(--accent-neon); transform: scale(1.02); }
+        .bench-player:hover { background: rgba(30, 41, 59, 0.7); border-color: var(--accent-neon); }
 
         .bench-avatar-frame {
             width: 48px;  
@@ -399,10 +346,10 @@
             .bench-score { font-size: 18px; }
         }
 
-        /* RESPONSIVO: NOTEBOOKS / PC (+20% de utilización de espacio de pantalla activa) */
+        /* RESPONSIVO: NOTEBOOKS / PC */
         @media (min-width: 992px) {
-            body { padding: 20px 30px; }
-            .main-wrapper { padding: 25px 35px; }
+            body { padding: 30px; }
+            .main-wrapper { padding: 35px; }
             h2 { font-size: 36px; }
             
             .workspace {
@@ -411,8 +358,8 @@
                 justify-content: space-between;
                 gap: 25px;
             }
-            .football-pitch { display: block; flex: 0 0 64%; max-width: 950px; }
-            .bench-section { display: block; flex: 0 0 34%; align-self: stretch; }
+            .football-pitch { display: block; flex: 0 0 58%; max-width: 730px; }
+            .bench-section { display: block; flex: 0 0 40%; align-self: stretch; }
             .bench-vertical-list { grid-template-columns: 1fr; gap: 14px; }
 
             .bench-player { padding: 16px 20px; gap: 18px; }
@@ -451,10 +398,7 @@
 
         <div class="workspace">
             <div class="football-pitch" id="cancha">
-                <div class="pitch-lines">
-                    <div class="pitch-center-line"></div>
-                    <div class="pitch-center-circle"></div>
-                </div>
+                <div class="pitch-lines"></div>
                 <div class="pitch-area-top"></div>
                 <div class="pitch-area-bot"></div>
             </div>
@@ -536,14 +480,18 @@
                 });
             }
 
+            // 1. Ordenamos estrictamente de mayor a menor puntaje
             listaJugadores.sort((a, b) => b.puntos - a.puntos);
 
+            // [CAMBIO CLAVE] LÓGICA DE RANKING CONSECUTIVO (DENSE RANK)
             let rangoConsecutivo = 1;
             listaJugadores.forEach((jugador, index) => {
                 if (index > 0) {
+                    // Si el puntaje es menor que el anterior, avanzamos SOLO 1 número de puesto
                     if (jugador.puntos < listaJugadores[index - 1].puntos) {
                         rangoConsecutivo++;
                     }
+                    // Si empatan el puntaje, se mantiene exactamente el mismo rangoConsecutivo actual
                 }
                 jugador.posCalculada = rangoConsecutivo;
             });
@@ -567,10 +515,10 @@
             cancha.style.display = "block";
             bancaContenedor.style.display = "block";
 
+            // Tomamos los primeros 11 registros ordenados para la cancha (titulares)
             const titulares = jugadores.slice(0, 11);
             const suplentes = jugadores.slice(11);
 
-            // Mapeo táctico original garantizado intacto
             const mapaTactico = [
                 { x: 50, y: 90 }, { x: 84, y: 76 }, { x: 61, y: 76 }, { x: 39, y: 76 }, { x: 16, y: 76 },
                 { x: 76, y: 56 }, { x: 50, y: 56 }, { x: 24, y: 56 }, { x: 70, y: 32 }, { x: 30, y: 32 }, { x: 50, y: 14 }
@@ -596,9 +544,7 @@
                     : obtenerContenidoAvatar(item.posCalculada);
 
                 divJugador.innerHTML = `
-                    <div class="birthday-crown-container">
-                        <div class="avatar">${avatarContenido}</div>
-                    </div>
+                    <div class="avatar">${avatarContenido}</div>
                     <div class="player-info">
                         <strong>${item.posCalculada}. ${item.nombre}</strong>
                         <span class="player-score">${item.puntos} PTS</span>
@@ -617,9 +563,7 @@
 
                 divSuplente.innerHTML = `
                     <div class="bench-pos">${item.posCalculada}</div>
-                    <div class="bench-avatar-frame">
-                        ${avatarContenidoSuplente}
-                    </div>
+                    <div class="bench-avatar-frame">${avatarContenidoSuplente}</div>
                     <div class="bench-info-container">
                         <span class="bench-info-name">${item.nombre}</span>
                         <div class="bench-score">${item.puntos} pts</div>
