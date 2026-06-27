@@ -108,7 +108,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* Estilo para la fecha de actualización */
         .update-timestamp {
             font-size: 12px;
             color: var(--text-muted);
@@ -129,7 +128,7 @@
             box-sizing: border-box;
         }
 
-        /* CANCHA (Colores Oficiales de Césped FIFA 2026) */
+        /* CANCHA */
         .football-pitch {
             width: 100%;
             aspect-ratio: 1 / 1.2; 
@@ -196,6 +195,24 @@
         }
         .pitch-area-top { top: 0; border-bottom: 2px solid rgba(255,255,255,0.4); }
         .pitch-area-bot { bottom: 0; border-top: 2px solid rgba(255,255,255,0.4); }
+
+        /* Estilo Dinámico de la Pelota en Movimiento */
+        .world-cup-ball {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: #ffffff;
+            color: #000000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            z-index: 50;
+            pointer-events: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.9), 0 0 12px var(--fifa-lime);
+            transition: transform 0.05s linear;
+        }
 
         /* ANIMACIÓN FLOTACIÓN */
         @keyframes flotacionBreathing {
@@ -272,7 +289,6 @@
             margin-top: 1px;
         }
 
-        /* Estilos de podio con la nueva estética */
         .p-pos-1 .avatar { background: linear-gradient(135deg, #fbbf24, #d97706); border-color: #ffe399; box-shadow: 0 0 18px rgba(251, 191, 36, 0.4); scale: 1.06; }
         .p-pos-1 .player-info { border-color: var(--gold); } 
         .p-pos-1 .player-score { color: #fef08a; }
@@ -471,6 +487,12 @@
         const statusBar = document.getElementById('status-bar');
         const fechaActualizacion = document.getElementById('fecha-actualizacion');
 
+        // Variables Globales para el comportamiento del Balón
+        let pelotaElemento = null;
+        let jugadaInterval = null;
+        let nodosPodio = []; 
+        let indiceAvatarActual = 0; 
+
         window.addEventListener('DOMContentLoaded', cargarDatosDesdeNube);
 
         function cargarDatosDesdeNube() {
@@ -544,24 +566,19 @@
                 jugador.posCalculada = rangoConsecutivo;
             });
 
-            // GESTIÓN DE CONTROL DE CAMBIOS Y MARCA DE TIEMPO
-            // Convertimos el objeto a string para compararlo de manera idéntica con el almacenamiento local
             const stringDatosActuales = JSON.stringify(listaJugadores);
             const datosPrevios = localStorage.getItem('fifa_datos_previos');
             let timestampMuestreo = localStorage.getItem('fifa_ultimo_timestamp');
 
             if (stringDatosActuales !== datosPrevios) {
-                // Si cambiaron los datos o es la primera ejecución, generamos nueva marca de tiempo
                 const ahora = new Date();
                 const opciones = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
                 timestampMuestreo = ahora.toLocaleDateString('es-ES', opciones);
                 
-                // Guardamos en la memoria del navegador para futuras visitas
                 localStorage.setItem('fifa_datos_previos', stringDatosActuales);
                 localStorage.setItem('fifa_ultimo_timestamp', timestampMuestreo);
             }
 
-            // Inyectamos la fecha si existe una guardada
             if (timestampMuestreo) {
                 fechaActualizacion.innerHTML = `<i class="fa-regular fa-clock"></i> Último cambio: ${timestampMuestreo}`;
             }
@@ -578,6 +595,10 @@
         }
 
         function renderizarEstadioFijo(jugadores) {
+            // Detener cualquier animación previa del balón para evitar duplicados
+            if(jugadaInterval) clearInterval(jugadaInterval);
+            if(pelotaElemento) pelotaElemento.remove();
+
             cancha.querySelectorAll('.player-node').forEach(el => el.remove());
             bancaCuerpo.innerHTML = "";
 
@@ -592,6 +613,8 @@
                 { x: 50, y: 90 }, { x: 84, y: 76 }, { x: 61, y: 76 }, { x: 39, y: 76 }, { x: 16, y: 76 },
                 { x: 76, y: 56 }, { x: 50, y: 56 }, { x: 24, y: 56 }, { x: 70, y: 32 }, { x: 30, y: 32 }, { x: 50, y: 14 }
             ];
+
+            nodosPodio = []; // Limpiamos referencias de los avatares del podio
 
             titulares.forEach((item, index) => {
                 const coordenadas = mapaTactico[10 - index];
@@ -620,6 +643,11 @@
                     </div>
                 `;
                 cancha.appendChild(divJugador);
+
+                // Guardamos el nodo si pertenece a los primeros 3 puestos calculados
+                if(item.posCalculada <= 3) {
+                    nodosPodio.push(divJugador);
+                }
             });
 
             suplentes.forEach(item => {
@@ -640,7 +668,93 @@
                 `;
                 bancaCuerpo.appendChild(divSuplente);
             });
+
+            // Si hay al menos 2 jugadores en el podio, iniciamos el juego del balón
+            if(nodosPodio.length >= 2) {
+                inicializarPasesBalon();
+            }
         }
+
+        // LÓGICA DE TRASLACIÓN Y REBOTE DEL BALÓN
+        function inicializarPasesBalon() {
+            pelotaElemento = document.createElement('div');
+            pelotaElemento.classList.add('world-cup-ball');
+            pelotaElemento.innerHTML = '<i class="fa-solid fa-soccer-ball"></i>';
+            cancha.appendChild(pelotaElemento);
+
+            indiceAvatarActual = 0; 
+            let objetivo = obtenerSiguienteObjetivoAleatorio(indiceAvatarActual);
+
+            // Coordenadas iniciales (Centro del primer avatar)
+            let posCentroOrigen = calcularCentroRelativoCancha(nodosPodio[indiceAvatarActual]);
+            let pelotaX = posCentroOrigen.x;
+            let pelotaY = posCentroOrigen.y;
+
+            // Rotación del ícono del balón
+            let gradosRotacion = 0;
+
+            // Configuración física del pase continuo
+            const velocidadPixelPorFrame = 3.5; 
+
+            jugadaInterval = setInterval(() => {
+                if (!pelotaElemento || nodosPodio.length === 0) return;
+
+                let posCentroDestino = calcularCentroRelativoCancha(nodosPodio[objetivo]);
+
+                let diferenciaX = posCentroDestino.x - pelotaX;
+                let diferenciaY = posCentroDestino.y - pelotaY;
+                let distanciaTotal = Math.sqrt(diferenciaX * diferenciaX + diferenciaY * diferenciaY);
+
+                if (distanciaTotal < velocidadPixelPorFrame) {
+                    // Colisión / Choque detectado: El balón llega al avatar destino y rebota hacia otro aleatorio
+                    indiceAvatarActual = objetivo;
+                    objetivo = obtenerSiguienteObjetivoAleatorio(indiceAvatarActual);
+                } else {
+                    // Mover la pelota de forma lineal hacia el objetivo actual
+                    pelotaX += (diferenciaX / distanciaTotal) * velocidadPixelPorFrame;
+                    pelotaY += (diferenciaY / distanciaTotal) * velocidadPixelPorFrame;
+                }
+
+                gradosRotacion = (gradosRotacion + 8) % 360;
+
+                // Renderizar la posición en la cancha restando la mitad de las dimensiones del balón (12px) para centrarlo perfectamente
+                pelotaElemento.style.left = `${pelotaX - 12}px`;
+                pelotaElemento.style.top = `${pelotaY - 12}px`;
+                pelotaElemento.style.transform = `rotate(${gradosRotacion}deg)`;
+
+            }, 1000 / 60); // 60 FPS estables
+        }
+
+        function obtenerSiguienteObjetivoAleatorio(indiceActual) {
+            let indicesDisponibles = [];
+            for (let i = 0; i < nodosPodio.length; i++) {
+                if (i !== indiceActual) indicesDisponibles.push(i);
+            }
+            // Retorna un índice al azar de los avatares restantes del podio
+            return indicesDisponibles[Math.floor(Math.random() * indicesDisponibles.length)];
+        }
+
+        function calcularCentroRelativoCancha(nodoJugador) {
+            const rectCancha = cancha.getBoundingClientRect();
+            // Localizamos el contenedor del Avatar circular de manera específica
+            const elementoAvatar = nodoJugador.querySelector('.avatar');
+            const rectAvatar = elementoAvatar.getBoundingClientRect();
+
+            // Obtenemos las coordenadas del centro del círculo del avatar restando la posición de la cancha
+            return {
+                x: (rectAvatar.left + rectAvatar.width / 2) - rectCancha.left,
+                y: (rectAvatar.top + rectAvatar.height / 2) - rectCancha.top
+            };
+        }
+
+        // Si el usuario cambia el tamaño de la ventana (Resize), recalculamos el render del juego para evitar descalces del balón
+        window.addEventListener('resize', () => {
+            if(nodosPodio.length >= 2 && pelotaElemento) {
+                let posCentroActual = calcularCentroRelativoCancha(nodosPodio[indiceAvatarActual]);
+                pelotaElemento.style.left = `${posCentroActual.x - 12}px`;
+                pelotaElemento.style.top = `${posCentroActual.y - 12}px`;
+            }
+        });
     </script>
 </body>
 </html>
