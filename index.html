@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Copa Mundial FIFA 2026 - Estadio Virtual Animado</title>
+    <title>Copa Mundial FIFA 2026 - Estadio Virtual Interactivo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -158,7 +158,7 @@
             transition: transform 0.05s linear;
         }
 
-        /* ANIMACIÓN FLOTACIÓN BASE DEL NODO JUGADOR */
+        /* ANIMACIÓN FLOTACIÓN BASE JUGADOR */
         @keyframes flotacionBreathing {
             0% { transform: translate(-50%, -52%); }
             50% { transform: translate(-50%, -48%); }
@@ -176,7 +176,7 @@
             animation: flotacionBreathing 4s ease-in-out infinite;
         }
 
-        /* ESTRUCTURA DEL CUERPO (AVATAR CIRCULAR) Y SUS NUEVAS EXTREMIDADES */
+        /* CUERPO DEL AVATAR Y EXTREMIDADES */
         .avatar-container {
             position: relative;
             width: 100%;
@@ -195,108 +195,93 @@
             color: #fff;
             overflow: hidden;
             font-size: 4.5vw; 
-            z-index: 2; /* Por encima de los brazos traseros */
+            z-index: 2;
         }
 
         .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        /* NUEVOS ELEMENTOS: BRACITOS Y PIES ANIMADOS */
+        /* CONTENEDORES DE EXTREMIDADES */
         .arms-wrapper, .feet-wrapper {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0; left: 0;
-            pointer-events: none;
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none;
         }
 
-        /* Lógica e Ilustración de los Brazos (Izquierdo y Derecho) */
+        /* BRACITOS Y MANOS EXTRA */
         .arms-wrapper::before, .arms-wrapper::after {
             content: '';
             position: absolute;
             top: 35%;
-            width: 16%;
+            width: 14%;
             height: 35%;
             background: #ffffff;
             border-radius: 20px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
             z-index: 1;
             transform-origin: top center;
         }
-        /* Brazo Izquierdo */
+        
+        /* Mano izquierda en la punta del brazo */
         .arms-wrapper::before {
             left: -12%;
             animation: moverBrazoIzq 0.6s ease-in-out infinite alternate;
+            box-shadow: inset 0 -6px 0 0 #ffdbb5, 0 3px 6px rgba(0,0,0,0.4); /* El color carne simula la manito circular al final */
         }
-        /* Brazo Derecho */
+        /* Mano derecha en la punta del brazo */
         .arms-wrapper::after {
             right: -12%;
             animation: moverBrazoDer 0.6s ease-in-out infinite alternate;
+            box-shadow: inset 0 -6px 0 0 #ffdbb5, 0 3px 6px rgba(0,0,0,0.4);
         }
 
-        /* Lógica e Ilustración de los Pies (Zapatitos) */
+        /* PIES (ZAPATITOS) */
         .feet-wrapper::before, .feet-wrapper::after {
             content: '';
             position: absolute;
             bottom: -10%;
             width: 24%;
             height: 16%;
-            background: #000000; /* Zapatos oscuros clásicos */
+            background: #000000;
             border: 1px solid var(--fifa-lime);
             border-radius: 8px 8px 4px 4px;
             z-index: 0;
         }
-        /* Pie Izquierdo */
         .feet-wrapper::before {
-            left: 20%;
+            left: 18%;
             animation: patearPieIzq 0.5s ease-in-out infinite alternate;
         }
-        /* Pie Derecho */
         .feet-wrapper::after {
-            right: 20%;
+            right: 18%;
             animation: patearPieDer 0.5s ease-in-out infinite alternate;
         }
 
-        /* ANIMACIONES DE EXTREMIDADES (ARRIBA Y ABAJO / ADELANTE Y ATRÁS) */
+        /* KEYFRAMES ANIMACIONES */
         @keyframes moverBrazoIzq {
-            0% { transform: rotate(25deg) translateY(0px); }
-            100% { transform: rotate(-15deg) translateY(-3px); }
+            0% { transform: rotate(30deg) translateY(0px); }
+            100% { transform: rotate(-20deg) translateY(-2px); }
         }
         @keyframes moverBrazoDer {
-            0% { transform: rotate(-25deg) translateY(-3px); }
-            100% { transform: rotate(15deg) translateY(0px); }
+            0% { transform: rotate(-30deg) translateY(-2px); }
+            100% { transform: rotate(20deg) translateY(0px); }
         }
         @keyframes patearPieIzq {
-            0% { transform: translateY(0px) scaleY(1); }
-            100% { transform: translateY(-4px) scaleY(0.9); }
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-5px); }
         }
         @keyframes patearPieDer {
-            0% { transform: translateY(-4px) scaleY(0.9); }
-            100% { transform: translateY(0px) scaleY(1); }
+            0% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
         }
 
-        /* PERSONALIZACIÓN DE COLORES DE EXTREMIDADES SEGÚN PODIO */
+        /* COLORES DE EXTREMIDADES POR CLASIFICACIÓN */
         .p-pos-1 .arms-wrapper::before, .p-pos-1 .arms-wrapper::after { background: var(--gold); }
-        .p-pos-1 .feet-wrapper::before, .p-pos-1 .feet-wrapper::after { background: #1e1b4b; border-color: var(--gold); }
-
         .p-pos-2 .arms-wrapper::before, .p-pos-2 .arms-wrapper::after { background: var(--silver); }
-        .p-pos-2 .feet-wrapper::before, .p-pos-2 .feet-wrapper::after { background: #334155; border-color: var(--silver); }
-
         .p-pos-3 .arms-wrapper::before, .p-pos-3 .arms-wrapper::after { background: var(--bronze); }
-        .p-pos-3 .feet-wrapper::before, .p-pos-3 .feet-wrapper::after { background: #431407; border-color: var(--bronze); }
-
         .p-normal .arms-wrapper::before, .p-normal .arms-wrapper::after { background: #0055ff; }
 
-        /* Efectos Hover */
-        .player-node:hover .avatar {
-            scale: 1.1; border-color: #ffffff; cursor: pointer; box-shadow: 0 0 20px rgba(204, 255, 0, 0.6);
-        }
-
+        /* DETALLES DE INFORMACIÓN JUGADOR */
         .player-info {
-            background: #090d14; padding: 4px 8px; border-radius: 6px; margin-top: 14px; /* Más margen por los zapatitos */
+            background: #090d14; padding: 4px 8px; border-radius: 6px; margin-top: 14px;
             font-size: 1.8vw; font-weight: 700; border: 1px solid rgba(255, 255, 255, 0.12);
             white-space: nowrap; box-shadow: 0 5px 12px rgba(0,0,0,0.7); text-align: center; color: #ffffff; width: fit-content;
         }
-        
         .player-score { color: var(--fifa-lime); font-size: 0.9em; font-weight: 800; display: block; margin-top: 1px; }
 
         .p-pos-1 .avatar { background: linear-gradient(135deg, #fbbf24, #d97706); border-color: #ffe399; box-shadow: 0 0 18px rgba(251, 191, 36, 0.4); }
@@ -304,7 +289,7 @@
         .p-pos-3 .avatar { background: linear-gradient(135deg, #ea580c, #7c2d12); border-color: #ffccb3; box-shadow: 0 0 12px rgba(234, 88, 12, 0.3); }
         .p-normal .avatar { background: linear-gradient(135deg, #0055ff, #050b14); border-color: rgba(204, 255, 0, 0.7); }
 
-        /* BANCA DE RESERVAS */
+        /* BANCA */
         .bench-section {
             width: 100%; background: rgba(13, 18, 28, 0.6); border-radius: 18px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); box-sizing: border-box; display: none;
         }
@@ -394,7 +379,7 @@
 
         let pelotaElemento = null;
         let jugadaInterval = null;
-        let nodosPodio = []; 
+        let todosLosNodosCancha = []; // Ahora guardamos TODOS los jugadores de la cancha
         let indiceAvatarActual = 0; 
 
         window.addEventListener('DOMContentLoaded', cargarDatosDesdeNube);
@@ -408,7 +393,7 @@
                 })
                 .then(csvTexto => {
                     procesarCSV(csvTexto);
-                    statusBar.innerHTML = `<i class="fa-solid fa-circle-check"></i> Cancha en vivo y animada`;
+                    statusBar.innerHTML = `<i class="fa-solid fa-circle-check"></i> Cancha completa jugando en vivo`;
                 })
                 .catch(error => {
                     statusBar.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Error al conectar base de datos.`;
@@ -484,7 +469,7 @@
                 { x: 76, y: 53 }, { x: 50, y: 53 }, { x: 24, y: 53 }, { x: 70, y: 30 }, { x: 30, y: 30 }, { x: 50, y: 14 }
             ];
 
-            nodosPodio = [];
+            todosLosNodosCancha = []; // Reiniciamos la lista de jugadores de la cancha
 
             titulares.forEach((item, index) => {
                 const coordenadas = mapaTactico[10 - index];
@@ -501,9 +486,7 @@
                 divJugador.style.left = `${coordenadas.x}%`;
                 divJugador.style.top = `${coordenadas.y}%`;
 
-                // TIEMPOS ALEATORIOS INDEPENDIENTES PARA LAS EXTREMIDADES DE CADA JUGADOR
                 const randomDurationBrazo = (Math.random() * 0.3 + 0.4).toFixed(2);
-                const randomDelayBrazo = (Math.random() * 0.5).toFixed(2);
                 const randomDurationPie = (Math.random() * 0.2 + 0.3).toFixed(2);
 
                 const avatarContenido = item.foto !== "" 
@@ -512,9 +495,9 @@
 
                 divJugador.innerHTML = `
                     <div class="avatar-container">
-                        <div class="arms-wrapper" style="--b-dur: ${randomDurationBrazo}s; --b-del: ${randomDelayBrazo}s;"></div>
+                        <div class="arms-wrapper"></div>
                         <div class="avatar">${avatarContenido}</div>
-                        <div class="feet-wrapper" style="--p-dur: ${randomDurationPie}s;"></div>
+                        <div class="feet-wrapper"></div>
                     </div>
                     <div class="player-info">
                         <strong>${item.posCalculada}. ${item.nombre}</strong>
@@ -522,17 +505,13 @@
                     </div>
                 `;
 
-                // Inyectamos estilos locales dinámicos para que no compartan el mismo ritmo exacto de animación
                 const arms = divJugador.querySelector('.arms-wrapper');
                 const feet = divJugador.querySelector('.feet-wrapper');
                 arms.style.setProperty('animation-duration', `${randomDurationBrazo}s`);
                 feet.style.setProperty('animation-duration', `${randomDurationPie}s`);
                 
                 cancha.appendChild(divJugador);
-
-                if(item.posCalculada <= 3) {
-                    nodosPodio.push(divJugador);
-                }
+                todosLosNodosCancha.push(divJugador); // Guardamos todos los nodos de la cancha
             });
 
             suplentes.forEach(item => {
@@ -550,12 +529,12 @@
                 bancaCuerpo.appendChild(divSuplente);
             });
 
-            if(nodosPodio.length >= 2) {
+            if(todosLosNodosCancha.length >= 2) {
                 inicializarPasesBalon();
             }
         }
 
-        /* MANEJO DEL BALÓN DEL PODIO */
+        /* BALÓN INTERACTIVO PASANDO POR TODOS LOS JUGADORES DE LA CANCHA */
         function inicializarPasesBalon() {
             pelotaElemento = document.createElement('div');
             pelotaElemento.classList.add('world-cup-ball');
@@ -565,16 +544,16 @@
             indiceAvatarActual = 0; 
             let objetivo = obtenerSiguienteObjetivoAleatorio(indiceAvatarActual);
 
-            let posCentroOrigen = calcularCentroRelativoCancha(nodosPodio[indiceAvatarActual]);
+            let posCentroOrigen = calcularCentroRelativoCancha(todosLosNodosCancha[indiceAvatarActual]);
             let pelotaX = posCentroOrigen.x;
             let pelotaY = posCentroOrigen.y;
             let gradosRotacion = 0;
             const velocidadPixelPorFrame = 3.5; 
 
             jugadaInterval = setInterval(() => {
-                if (!pelotaElemento || nodosPodio.length === 0) return;
+                if (!pelotaElemento || todosLosNodosCancha.length === 0) return;
 
-                let posCentroDestino = calcularCentroRelativoCancha(nodosPodio[objetivo]);
+                let posCentroDestino = calcularCentroRelativoCancha(todosLosNodosCancha[objetivo]);
                 let diferenciaX = posCentroDestino.x - pelotaX;
                 let diferenciaY = posCentroDestino.y - pelotaY;
                 let distanciaTotal = Math.sqrt(diferenciaX * diferenciaX + diferenciaY * diferenciaY);
@@ -597,7 +576,7 @@
 
         function obtenerSiguienteObjetivoAleatorio(indiceActual) {
             let indicesDisponibles = [];
-            for (let i = 0; i < nodosPodio.length; i++) {
+            for (let i = 0; i < todosLosNodosCancha.length; i++) {
                 if (i !== indiceActual) indicesDisponibles.push(i);
             }
             return indicesDisponibles[Math.floor(Math.random() * indicesDisponibles.length)];
@@ -614,8 +593,8 @@
         }
 
         window.addEventListener('resize', () => {
-            if(nodosPodio.length >= 2 && pelotaElemento) {
-                let posCentroActual = calcularCentroRelativoCancha(nodosPodio[indiceAvatarActual]);
+            if(todosLosNodosCancha.length >= 2 && pelotaElemento) {
+                let posCentroActual = calcularCentroRelativoCancha(todosLosNodosCancha[indiceAvatarActual]);
                 pelotaElemento.style.left = `${posCentroActual.x - 12}px`;
                 pelotaElemento.style.top = `${posCentroActual.y - 12}px`;
             }
