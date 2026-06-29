@@ -200,36 +200,55 @@
 
         .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        /* CONTENEDORES DE EXTREMIDADES */
-        .hands-wrapper, .feet-wrapper {
-            position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none;
+        /* NUEVOS BRAZOS ESTILO CARICATURA CLÁSICA */
+        .cartoon-arm {
+            position: absolute;
+            top: 42%;
+            width: 26%;
+            height: 7px;
+            background: #1a1a1a; /* Brazos negros delgados */
+            z-index: 1;
+            border: 1px solid rgba(0,0,0,0.4);
         }
 
-        /* SÓLO MANITOS PEQUEÑAS Y REDONDAS (Sin mangas largas para evitar el efecto oreja) */
-        .hands-wrapper::before, .hands-wrapper::after {
-            content: '';
+        .arm-left {
+            left: -20%;
+            border-radius: 4px 0 0 4px;
+            transform-origin: right center;
+            animation: animBrazoIzq 0.5s ease-in-out infinite alternate;
+        }
+
+        .arm-right {
+            right: -20%;
+            border-radius: 0 4px 4px 0;
+            transform-origin: left center;
+            animation: animBrazoDer 0.5s ease-in-out infinite alternate;
+        }
+
+        /* GUANTES BLANCOS REDONDOS CON BORDE (Estilo la imagen provista) */
+        .glove-hand {
             position: absolute;
-            top: 40%;
-            width: 15%;
-            height: 15%;
-            background: #ffdbb5; /* Color piel/caricatura */
+            width: 14px;
+            height: 14px;
+            background: #ffffff;
+            border: 2px solid #1a1a1a;
             border-radius: 50%;
-            z-index: 3; /* Por delante de la polera */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            top: -5px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
         }
-        
-        /* Mano Izquierda */
-        .hands-wrapper::before {
-            left: -8%;
-            animation: vibrarManoIzq 0.4s ease-in-out infinite alternate;
+
+        .arm-left .glove-hand {
+            left: -9px;
         }
-        /* Mano Derecha */
-        .hands-wrapper::after {
-            right: -8%;
-            animation: vibrarManoDer 0.4s ease-in-out infinite alternate;
+
+        .arm-right .glove-hand {
+            right: -9px;
         }
 
         /* PIES (ZAPATITOS) */
+        .feet-wrapper {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none;
+        }
         .feet-wrapper::before, .feet-wrapper::after {
             content: '';
             position: absolute;
@@ -250,14 +269,14 @@
             animation: patearPieDer 0.5s ease-in-out infinite alternate;
         }
 
-        /* KEYFRAMES ANIMACIONES */
-        @keyframes vibrarManoIzq {
-            0% { transform: translateY(0px) translateX(0px); }
-            100% { transform: translateY(-3px) translateX(-1px); }
+        /* KEYFRAMES ANIMACIONES CARICATURA */
+        @keyframes animBrazoIzq {
+            0% { transform: rotate(25deg); }
+            100% { transform: rotate(-15deg); }
         }
-        @keyframes vibrarManoDer {
-            0% { transform: translateY(-3px) translateX(1px); }
-            100% { transform: translateY(0px) translateX(0px); }
+        @keyframes animBrazoDer {
+            0% { transform: rotate(-25deg); }
+            100% { transform: rotate(15deg); }
         }
         @keyframes patearPieIzq {
             0% { transform: translateY(0px); }
@@ -478,7 +497,7 @@
                 divJugador.style.left = `${coordenadas.x}%`;
                 divJugador.style.top = `${coordenadas.y}%`;
 
-                const randomDurationMano = (Math.random() * 0.2 + 0.3).toFixed(2);
+                const randomDurationBrazo = (Math.random() * 0.2 + 0.4).toFixed(2);
                 const randomDurationPie = (Math.random() * 0.2 + 0.3).toFixed(2);
 
                 const avatarContenido = item.foto !== "" 
@@ -487,8 +506,9 @@
 
                 divJugador.innerHTML = `
                     <div class="avatar-container">
-                        <div class="hands-wrapper"></div>
+                        <div class="cartoon-arm arm-left"><div class="glove-hand"></div></div>
                         <div class="avatar">${avatarContenido}</div>
+                        <div class="cartoon-arm arm-right"><div class="glove-hand"></div></div>
                         <div class="feet-wrapper"></div>
                     </div>
                     <div class="player-info">
@@ -497,9 +517,12 @@
                     </div>
                 `;
 
-                const hands = divJugador.querySelector('.hands-wrapper');
+                const armL = divJugador.querySelector('.arm-left');
+                const armR = divJugador.querySelector('.arm-right');
                 const feet = divJugador.querySelector('.feet-wrapper');
-                hands.style.setProperty('animation-duration', `${randomDurationMano}s`);
+                
+                armL.style.setProperty('animation-duration', `${randomDurationBrazo}s`);
+                armR.style.setProperty('animation-duration', `${randomDurationBrazo}s`);
                 feet.style.setProperty('animation-duration', `${randomDurationPie}s`);
                 
                 cancha.appendChild(divJugador);
