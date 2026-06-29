@@ -201,80 +201,72 @@
         .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         /* CONTENEDORES DE EXTREMIDADES */
-        .arms-wrapper, .feet-wrapper {
+        .hands-wrapper, .feet-wrapper {
             position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none;
         }
 
-        /* BRACITOS Y MANOS EXTRA */
-        .arms-wrapper::before, .arms-wrapper::after {
+        /* SÓLO MANITOS PEQUEÑAS Y REDONDAS (Sin mangas largas para evitar el efecto oreja) */
+        .hands-wrapper::before, .hands-wrapper::after {
             content: '';
             position: absolute;
-            top: 35%;
-            width: 14%;
-            height: 35%;
-            background: #ffffff;
-            border-radius: 20px;
-            z-index: 1;
-            transform-origin: top center;
+            top: 40%;
+            width: 15%;
+            height: 15%;
+            background: #ffdbb5; /* Color piel/caricatura */
+            border-radius: 50%;
+            z-index: 3; /* Por delante de la polera */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
         }
         
-        /* Mano izquierda en la punta del brazo */
-        .arms-wrapper::before {
-            left: -12%;
-            animation: moverBrazoIzq 0.6s ease-in-out infinite alternate;
-            box-shadow: inset 0 -6px 0 0 #ffdbb5, 0 3px 6px rgba(0,0,0,0.4); /* El color carne simula la manito circular al final */
+        /* Mano Izquierda */
+        .hands-wrapper::before {
+            left: -8%;
+            animation: vibrarManoIzq 0.4s ease-in-out infinite alternate;
         }
-        /* Mano derecha en la punta del brazo */
-        .arms-wrapper::after {
-            right: -12%;
-            animation: moverBrazoDer 0.6s ease-in-out infinite alternate;
-            box-shadow: inset 0 -6px 0 0 #ffdbb5, 0 3px 6px rgba(0,0,0,0.4);
+        /* Mano Derecha */
+        .hands-wrapper::after {
+            right: -8%;
+            animation: vibrarManoDer 0.4s ease-in-out infinite alternate;
         }
 
         /* PIES (ZAPATITOS) */
         .feet-wrapper::before, .feet-wrapper::after {
             content: '';
             position: absolute;
-            bottom: -10%;
-            width: 24%;
-            height: 16%;
+            bottom: -8%;
+            width: 22%;
+            height: 14%;
             background: #000000;
             border: 1px solid var(--fifa-lime);
-            border-radius: 8px 8px 4px 4px;
+            border-radius: 6px;
             z-index: 0;
         }
         .feet-wrapper::before {
-            left: 18%;
+            left: 20%;
             animation: patearPieIzq 0.5s ease-in-out infinite alternate;
         }
         .feet-wrapper::after {
-            right: 18%;
+            right: 20%;
             animation: patearPieDer 0.5s ease-in-out infinite alternate;
         }
 
         /* KEYFRAMES ANIMACIONES */
-        @keyframes moverBrazoIzq {
-            0% { transform: rotate(30deg) translateY(0px); }
-            100% { transform: rotate(-20deg) translateY(-2px); }
+        @keyframes vibrarManoIzq {
+            0% { transform: translateY(0px) translateX(0px); }
+            100% { transform: translateY(-3px) translateX(-1px); }
         }
-        @keyframes moverBrazoDer {
-            0% { transform: rotate(-30deg) translateY(-2px); }
-            100% { transform: rotate(20deg) translateY(0px); }
+        @keyframes vibrarManoDer {
+            0% { transform: translateY(-3px) translateX(1px); }
+            100% { transform: translateY(0px) translateX(0px); }
         }
         @keyframes patearPieIzq {
             0% { transform: translateY(0px); }
-            100% { transform: translateY(-5px); }
+            100% { transform: translateY(-4px); }
         }
         @keyframes patearPieDer {
-            0% { transform: translateY(-5px); }
+            0% { transform: translateY(-4px); }
             100% { transform: translateY(0px); }
         }
-
-        /* COLORES DE EXTREMIDADES POR CLASIFICACIÓN */
-        .p-pos-1 .arms-wrapper::before, .p-pos-1 .arms-wrapper::after { background: var(--gold); }
-        .p-pos-2 .arms-wrapper::before, .p-pos-2 .arms-wrapper::after { background: var(--silver); }
-        .p-pos-3 .arms-wrapper::before, .p-pos-3 .arms-wrapper::after { background: var(--bronze); }
-        .p-normal .arms-wrapper::before, .p-normal .arms-wrapper::after { background: #0055ff; }
 
         /* DETALLES DE INFORMACIÓN JUGADOR */
         .player-info {
@@ -379,7 +371,7 @@
 
         let pelotaElemento = null;
         let jugadaInterval = null;
-        let todosLosNodosCancha = []; // Ahora guardamos TODOS los jugadores de la cancha
+        let todosLosNodosCancha = []; 
         let indiceAvatarActual = 0; 
 
         window.addEventListener('DOMContentLoaded', cargarDatosDesdeNube);
@@ -469,7 +461,7 @@
                 { x: 76, y: 53 }, { x: 50, y: 53 }, { x: 24, y: 53 }, { x: 70, y: 30 }, { x: 30, y: 30 }, { x: 50, y: 14 }
             ];
 
-            todosLosNodosCancha = []; // Reiniciamos la lista de jugadores de la cancha
+            todosLosNodosCancha = [];
 
             titulares.forEach((item, index) => {
                 const coordenadas = mapaTactico[10 - index];
@@ -486,7 +478,7 @@
                 divJugador.style.left = `${coordenadas.x}%`;
                 divJugador.style.top = `${coordenadas.y}%`;
 
-                const randomDurationBrazo = (Math.random() * 0.3 + 0.4).toFixed(2);
+                const randomDurationMano = (Math.random() * 0.2 + 0.3).toFixed(2);
                 const randomDurationPie = (Math.random() * 0.2 + 0.3).toFixed(2);
 
                 const avatarContenido = item.foto !== "" 
@@ -495,7 +487,7 @@
 
                 divJugador.innerHTML = `
                     <div class="avatar-container">
-                        <div class="arms-wrapper"></div>
+                        <div class="hands-wrapper"></div>
                         <div class="avatar">${avatarContenido}</div>
                         <div class="feet-wrapper"></div>
                     </div>
@@ -505,13 +497,13 @@
                     </div>
                 `;
 
-                const arms = divJugador.querySelector('.arms-wrapper');
+                const hands = divJugador.querySelector('.hands-wrapper');
                 const feet = divJugador.querySelector('.feet-wrapper');
-                arms.style.setProperty('animation-duration', `${randomDurationBrazo}s`);
+                hands.style.setProperty('animation-duration', `${randomDurationMano}s`);
                 feet.style.setProperty('animation-duration', `${randomDurationPie}s`);
                 
                 cancha.appendChild(divJugador);
-                todosLosNodosCancha.push(divJugador); // Guardamos todos los nodos de la cancha
+                todosLosNodosCancha.push(divJugador);
             });
 
             suplentes.forEach(item => {
@@ -534,7 +526,7 @@
             }
         }
 
-        /* BALÓN INTERACTIVO PASANDO POR TODOS LOS JUGADORES DE LA CANCHA */
+        /* BALÓN INTERACTIVO PASANDO POR TODOS LOS JUGADORES */
         function inicializarPasesBalon() {
             pelotaElemento = document.createElement('div');
             pelotaElemento.classList.add('world-cup-ball');
