@@ -176,7 +176,7 @@
             animation: flotacionBreathing 4s ease-in-out infinite;
         }
 
-        /* ASEGURAR AVATARES 100% REDONDOS */
+        /* AVATARES 100% REDONDOS */
         .avatar-container {
             position: relative;
             width: 100%;
@@ -209,11 +209,20 @@
             border-radius: 50%;
         }
 
-        /* DETALLES DE INFORMACIÓN JUGADOR */
+        /* DETALLES DE INFORMACIÓN JUGADOR - MÁS JUNTOS AL AVATAR */
         .player-info {
-            background: #090d14; padding: 4px 8px; border-radius: 6px; margin-top: 14px;
-            font-size: 1.8vw; font-weight: 700; border: 1px solid rgba(255, 255, 255, 0.12);
-            white-space: nowrap; box-shadow: 0 5px 12px rgba(0,0,0,0.7); text-align: center; color: #ffffff; width: fit-content;
+            background: #090d14; 
+            padding: 4px 8px; 
+            border-radius: 6px; 
+            margin-top: 5px; /* Reducido para juntarlo más al avatar */
+            font-size: 1.8vw; 
+            font-weight: 700; 
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            white-space: nowrap; 
+            box-shadow: 0 5px 12px rgba(0,0,0,0.7); 
+            text-align: center; 
+            color: #ffffff; 
+            width: fit-content;
         }
         .player-score { color: var(--fifa-lime); font-size: 0.9em; font-weight: 800; display: block; margin-top: 1px; }
 
@@ -265,7 +274,7 @@
             .p-pos-2 .avatar-container { width: 88px; height: 88px; }
             .p-pos-3 .avatar-container { width: 82px; height: 82px; }
             .player-node { width: auto; }
-            .player-info { font-size: 13px; min-width: 105px; padding: 4px 8px; }
+            .player-info { font-size: 13px; min-width: 105px; padding: 4px 8px; margin-top: 6px; }
         }
     </style>
 </head>
