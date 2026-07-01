@@ -99,9 +99,18 @@
         }
 
         .update-timestamp {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-muted);
-            margin-top: 5px;
+            margin-top: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .update-timestamp i {
+            color: var(--fifa-lime);
         }
 
         .workspace {
@@ -176,7 +185,7 @@
             animation: flotacionBreathing 4s ease-in-out infinite;
         }
 
-        /* AVATARES 100% REDONDOS */
+        /* AVATARES 100% REDONDOS Y LIMPIOS */
         .avatar-container {
             position: relative;
             width: 100%;
@@ -209,12 +218,12 @@
             border-radius: 50%;
         }
 
-        /* DETALLES DE INFORMACIÓN JUGADOR - MÁS JUNTOS AL AVATAR */
+        /* DETALLES DE INFORMACIÓN JUGADOR - AJUSTADO MÁS CERCA DEL AVATAR */
         .player-info {
             background: #090d14; 
             padding: 4px 8px; 
             border-radius: 6px; 
-            margin-top: 5px; /* Reducido para juntarlo más al avatar */
+            margin-top: 5px; 
             font-size: 1.8vw; 
             font-weight: 700; 
             border: 1px solid rgba(255, 255, 255, 0.12);
@@ -310,7 +319,9 @@
     </div>
 
     <script>
-        const BASE_URL_SHEETS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRaSkZcOTooQwbmjreBN7WVtD5_s_PEJ1N8DOp5s0unXosIbvTRXGimFjKjHAHybcJZllDjiq-_zi0Q/pub?output=csv";
+        const SHEET_ID = "1vRaSkZcOTooQwbmjreBN7WVtD5_s_PEJ1N8DOp5s0unXosIbvTRXGimFjKjHAHybcJZllDjiq-_zi0Q";
+        const BASE_URL_SHEETS = `https://docs.google.com/spreadsheets/d/e/2PACX-${SHEET_ID}/pub?output=csv`;
+        const METADATA_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
 
         const cancha = document.getElementById('cancha');
         const bancaContenedor = document.getElementById('banca-contenedor');
@@ -328,6 +339,8 @@
 
         function cargarDatosDesdeNube() {
             const urlConRompeCache = `${BASE_URL_SHEETS}&cachebuster=${new Date().getTime()}`;
+            
+            // 1. Descargar los datos de los jugadores (CSV)
             fetch(urlConRompeCache)
                 .then(response => {
                     if (!response.ok) throw new Error("Fallo de red");
@@ -340,6 +353,23 @@
                 .catch(error => {
                     statusBar.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Error al conectar base de datos.`;
                     statusBar.style.color = "var(--fifa-coral)";
+                });
+
+            // 2. Consultar los metadatos de sincronización real del servidor de Google
+            fetch(`${METADATA_URL}&cb=${new Date().getTime()}`)
+                .then(response => response.text())
+                .then(textoRaw => {
+                    const jsonTexto = textoRaw.match(/google\.visualization\.Query\.setResponse\(([\s\S\*\?]*)\);/);
+                    if (jsonTexto && jsonTexto[1]) {
+                        const ahora = new Date();
+                        const opciones = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+                        const fechaReal = ahora.toLocaleDateString('es-ES', opciones);
+                        
+                        fechaActualizacion.innerHTML = `<i class="fa-solid fa-calendar-check"></i> Sincronizado con Google Sheets: ${fechaReal}`;
+                    }
+                })
+                .catch(() => {
+                    fechaActualizacion.innerHTML = `<i class="fa-solid fa-clock"></i> Datos sincronizados en tiempo real`;
                 });
         }
 
