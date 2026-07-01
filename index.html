@@ -98,8 +98,29 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .update-timestamp {
+        /* DISEÑO DE LA ETIQUETA DINÁMICA DEL PARTIDO L2 */
+        .match-badge {
+            display: inline-block;
+            background: rgba(255, 74, 90, 0.15);
+            border: 1px solid rgba(255, 74, 90, 0.4);
+            color: #ffffff;
+            padding: 6px 14px;
+            border-radius: 6px;
             font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 6px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(255, 74, 90, 0.1);
+        }
+
+        .match-badge i {
+            color: var(--gold);
+            margin-right: 6px;
+        }
+
+        .update-timestamp {
+            font-size: 12px;
             color: var(--text-muted);
             margin-top: 8px;
             font-weight: 500;
@@ -107,10 +128,6 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-        }
-
-        .update-timestamp i {
-            color: var(--fifa-lime);
         }
 
         .workspace {
@@ -185,7 +202,7 @@
             animation: flotacionBreathing 4s ease-in-out infinite;
         }
 
-        /* AVATARES 100% REDONDOS Y LIMPIOS */
+        /* AVATARES 100% REDONDOS */
         .avatar-container {
             position: relative;
             width: 100%;
@@ -218,7 +235,7 @@
             border-radius: 50%;
         }
 
-        /* DETALLES DE INFORMACIÓN JUGADOR - AJUSTADO MÁS CERCA DEL AVATAR */
+        /* DETALLES DE INFORMACIÓN JUGADOR */
         .player-info {
             background: #090d14; 
             padding: 4px 8px; 
@@ -296,6 +313,7 @@
 
         <div class="header-titles">
             <h2>Mundial FIFA 2026</h2>
+            <div id="badge-partido" class="match-badge" style="display: none;"></div>
             <div id="fecha-actualizacion" class="update-timestamp"></div>
         </div>
 
@@ -328,6 +346,7 @@
         const bancaCuerpo = document.getElementById('banca-cuerpo');
         const mensajeInicio = document.getElementById('mensaje-inicio');
         const statusBar = document.getElementById('status-bar');
+        const badgePartido = document.getElementById('badge-partido');
         const fechaActualizacion = document.getElementById('fecha-actualizacion');
 
         let pelotaElemento = null;
@@ -355,7 +374,7 @@
                     statusBar.style.color = "var(--fifa-coral)";
                 });
 
-            // 2. Consultar los metadatos de sincronización real del servidor de Google
+            // 2. Consultar la sincronización real del servidor de Google
             fetch(`${METADATA_URL}&cb=${new Date().getTime()}`)
                 .then(response => response.text())
                 .then(textoRaw => {
@@ -365,7 +384,7 @@
                         const opciones = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
                         const fechaReal = ahora.toLocaleDateString('es-ES', opciones);
                         
-                        fechaActualizacion.innerHTML = `<i class="fa-solid fa-calendar-check"></i> Sincronizado con Google Sheets: ${fechaReal}`;
+                        fechaActualizacion.innerHTML = `<i class="fa-solid fa-calendar-check" style="color: var(--fifa-lime);"></i> Sincronizado con Google Sheets: ${fechaReal}`;
                     }
                 })
                 .catch(() => {
@@ -377,6 +396,16 @@
             const filasRaw = texto.split(/\r?\n/);
             const filas = filasRaw.map(f => f.split(','));
             if (filas.length < 2) return;
+
+            // --- LÓGICA DE CAPTURA DINÁMICA DE LA CELDA L2 ---
+            // Fila 2 en Sheets es índice 1. Columna L es la número 12 (índice 11)
+            if (filas[1] && filas[1][11]) {
+                const partidoL2 = filas[1][11].replace(/^"|"$/g, '').trim();
+                if (partidoL2 !== "") {
+                    badgePartido.innerHTML = `<i class="fa-solid fa-trophy"></i> Actualizado con el resultado del partido : ${partidoL2}`;
+                    badgePartido.style.display = "inline-block";
+                }
+            }
 
             const listaJugadores = [];
             let colLugar = 0, colNombre = 1, colPuntaje = 2, colFoto = -1;
