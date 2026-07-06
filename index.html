@@ -98,7 +98,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* DISEÑO DE LA ETIQUETA DINÁMICA DEL PARTIDO L2 */
         .match-badge {
             display: inline-block;
             background: rgba(255, 74, 90, 0.15);
@@ -182,6 +181,29 @@
             font-size: 16px; z-index: 50; pointer-events: none;
             box-shadow: 0 4px 10px rgba(0,0,0,0.9), 0 0 12px var(--fifa-lime);
             transition: transform 0.05s linear;
+        }
+
+        /* OVERLAY DE CELEBRACIÓN DE GOL */
+        .overlay-gol {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(74, 21, 75, 0.85);
+            z-index: 90;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease;
+            border-radius: 14px;
+        }
+        .overlay-gol.activo { opacity: 1; }
+        .texto-gol {
+            font-size: 45px; font-weight: 900; color: var(--fifa-lime);
+            text-transform: uppercase; letter-spacing: 2px;
+            animation: pulseGol 0.6s infinite alternate;
+        }
+        @keyframes pulseGol {
+            0% { transform: scale(0.9); text-shadow: 0 0 10px rgba(204,255,0,0.6); }
+            100% { transform: scale(1.1); text-shadow: 0 0 30px rgba(204,255,0,0.9); }
         }
 
         /* ANIMACIÓN FLOTACIÓN BASE JUGADOR */
@@ -327,6 +349,9 @@
                 <div class="pitch-lines"></div>
                 <div class="pitch-area-top"></div>
                 <div class="pitch-area-bot"></div>
+                <div class="overlay-gol" id="overlay-gol">
+                    <div class="texto-gol">¡GOOOL!</div>
+                </div>
             </div>
 
             <div class="bench-section" id="banca-contenedor">
@@ -353,13 +378,13 @@
         let jugadaInterval = null;
         let todosLosNodosCancha = []; 
         let indiceAvatarActual = 0; 
+        let estaCelebrandoGol = false;
 
         window.addEventListener('DOMContentLoaded', cargarDatosDesdeNube);
 
         function cargarDatosDesdeNube() {
             const urlConRompeCache = `${BASE_URL_SHEETS}&cachebuster=${new Date().getTime()}`;
             
-            // 1. Descargar los datos de los jugadores (CSV)
             fetch(urlConRompeCache)
                 .then(response => {
                     if (!response.ok) throw new Error("Fallo de red");
@@ -374,7 +399,6 @@
                     statusBar.style.color = "var(--fifa-coral)";
                 });
 
-            // 2. Consultar la sincronización real del servidor de Google
             fetch(`${METADATA_URL}&cb=${new Date().getTime()}`)
                 .then(response => response.text())
                 .then(textoRaw => {
@@ -397,8 +421,6 @@
             const filas = filasRaw.map(f => f.split(','));
             if (filas.length < 2) return;
 
-            // --- LÓGICA DE CAPTURA DINÁMICA DE LA CELDA L2 ---
-            // Fila 2 en Sheets es índice 1. Columna L es la número 12 (índice 11)
             if (filas[1] && filas[1][11]) {
                 const partidoL2 = filas[1][11].replace(/^"|"$/g, '').trim();
                 if (partidoL2 !== "") {
@@ -478,6 +500,7 @@
 
                 const divJugador = document.createElement('div');
                 divJugador.classList.add('player-node');
+                divJugador.setAttribute('data-nombre', item.nombre);
                 
                 if (item.posCalculada === 1) divJugador.classList.add('p-pos-1');
                 else if (item.posCalculada === 2) divJugador.classList.add('p-pos-2');
@@ -525,8 +548,13 @@
             }
         }
 
-        /* BALÓN INTERACTIVO PASANDO POR TODOS LOS JUGADORES */
+        /* BALÓN INTERACTIVO CON EVENTO DE GOL EXCLUSIVO EN EL ARCO SUPERIOR */
         function inicializarPasesBalon() {
+            if (jugadaInterval) clearInterval(jugadaInterval);
+            
+            const balonExistente = cancha.querySelector('.world-cup-ball');
+            if (balonExistente) balonExistente.remove();
+
             pelotaElemento = document.createElement('div');
             pelotaElemento.classList.add('world-cup-ball');
             pelotaElemento.innerHTML = '<i class="fa-solid fa-soccer-ball"></i>';
@@ -534,27 +562,91 @@
 
             indiceAvatarActual = 0; 
             let objetivo = obtenerSiguienteObjetivoAleatorio(indiceAvatarActual);
+            
+            let estaChutandoAGol = false;
+            let coordenadasArcoObjetivo = null;
 
             let posCentroOrigen = calcularCentroRelativoCancha(todosLosNodosCancha[indiceAvatarActual]);
             let pelotaX = posCentroOrigen.x;
             let pelotaY = posCentroOrigen.y;
             let gradosRotacion = 0;
-            const velocidadPixelPorFrame = 3.5; 
+            
+            const velocidadNormal = 3.5;
+            const velocidadChute = 8.5; // Latigazo rápido al arco
+
+            function ejecutarCelebracion(nombreGoleador) {
+                estaCelebrandoGol = true;
+                const overlayGol = document.getElementById('overlay-gol');
+                if (overlayGol) overlayGol.classList.add('activo');
+
+                const msgAnterior = statusBar.innerHTML;
+                statusBar.innerHTML = `<i class="fa-solid fa-fire fa-bounce"></i> ¡GOOOL del Líder (${nombreGoleador})! 🔥🏆`;
+                statusBar.style.color = "var(--fifa-lime)";
+                statusBar.style.borderColor = "var(--fifa-lime)";
+
+                setTimeout(() => {
+                    if (overlayGol) overlayGol.classList.remove('activo');
+                    statusBar.innerHTML = msgAnterior;
+                    statusBar.style.color = "";
+                    statusBar.style.borderColor = "";
+
+                    estaChutandoAGol = false;
+                    estaCelebrandoGol = false;
+
+                    if (todosLosNodosCancha.length > 0) {
+                        indiceAvatarActual = Math.floor(Math.random() * todosLosNodosCancha.length);
+                        let posReset = calcularCentroRelativoCancha(todosLosNodosCancha[indiceAvatarActual]);
+                        pelotaX = posReset.x;
+                        pelotaY = posReset.y;
+                        objetivo = obtenerSiguienteObjetivoAleatorio(indiceAvatarActual);
+                    }
+                }, 3500);
+            }
 
             jugadaInterval = setInterval(() => {
-                if (!pelotaElemento || todosLosNodosCancha.length === 0) return;
+                if (!pelotaElemento || todosLosNodosCancha.length === 0 || estaCelebrandoGol) return;
 
-                let posCentroDestino = calcularCentroRelativoCancha(todosLosNodosCancha[objetivo]);
+                let posCentroDestino;
+                let velocidadActual = velocidadNormal;
+
+                if (estaChutandoAGol) {
+                    posCentroDestino = coordenadasArcoObjetivo;
+                    velocidadActual = velocidadChute;
+                } else {
+                    if (!todosLosNodosCancha[objetivo]) {
+                        objetivo = obtenerSiguienteObjetivoAleatorio(indiceAvatarActual);
+                        return;
+                    }
+                    posCentroDestino = calcularCentroRelativoCancha(todosLosNodosCancha[objetivo]);
+                }
+
                 let diferenciaX = posCentroDestino.x - pelotaX;
                 let diferenciaY = posCentroDestino.y - pelotaY;
                 let distanciaTotal = Math.sqrt(diferenciaX * diferenciaX + diferenciaY * diferenciaY);
 
-                if (distanciaTotal < velocidadPixelPorFrame) {
-                    indiceAvatarActual = objetivo;
-                    objetivo = obtenerSiguienteObjetivoAleatorio(indiceAvatarActual);
+                if (distanciaTotal < velocidadActual) {
+                    if (estaChutandoAGol) {
+                        const nodoGoleador = todosLosNodosCancha[indiceAvatarActual];
+                        const nombreGoleador = nodoGoleador ? nodoGoleador.getAttribute('data-nombre') : '1er Lugar';
+                        ejecutarCelebracion(nombreGoleador);
+                    } else {
+                        indiceAvatarActual = objetivo;
+                        const nodoActual = todosLosNodosCancha[indiceAvatarActual];
+                        
+                        // Si es el líder (p-pos-1), 40% de chance de patear arriba
+                        if (nodoActual && nodoActual.classList.contains('p-pos-1') && Math.random() < 0.40) {
+                            estaChutandoAGol = true;
+                            coordenadasArcoObjetivo = {
+                                x: cancha.offsetWidth * (0.43 + Math.random() * 0.14),
+                                y: 8 
+                            };
+                        } else {
+                            objetivo = obtenerSiguienteObjetivoAleatorio(indiceAvatarActual);
+                        }
+                    }
                 } else {
-                    pelotaX += (diferenciaX / distanciaTotal) * velocidadPixelPorFrame;
-                    pelotaY += (diferenciaY / distanciaTotal) * velocidadPixelPorFrame;
+                    pelotaX += (diferenciaX / distanciaTotal) * velocidadActual;
+                    pelotaY += (diferenciaY / distanciaTotal) * velocidadActual;
                 }
 
                 gradosRotacion = (gradosRotacion + 8) % 360;
@@ -574,6 +666,7 @@
         }
 
         function calcularCentroRelativoCancha(nodoJugador) {
+            if (!nodoJugador || !cancha) return { x: 0, y: 0 };
             const rectCancha = cancha.getBoundingClientRect();
             const elementoAvatar = nodoJugador.querySelector('.avatar');
             const rectAvatar = elementoAvatar.getBoundingClientRect();
@@ -584,7 +677,7 @@
         }
 
         window.addEventListener('resize', () => {
-            if(todosLosNodosCancha.length >= 2 && pelotaElemento) {
+            if(todosLosNodosCancha.length >= 2 && pelotaElemento && !estaCelebrandoGol) {
                 let posCentroActual = calcularCentroRelativoCancha(todosLosNodosCancha[indiceAvatarActual]);
                 pelotaElemento.style.left = `${posCentroActual.x - 12}px`;
                 pelotaElemento.style.top = `${posCentroActual.y - 12}px`;
